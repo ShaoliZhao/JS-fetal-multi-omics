@@ -82,8 +82,9 @@ Methods represented:
 
 Methods represented:
 
+- cerebellum single-nucleus CellChat
 - kidney single-nucleus CellChat
-- spatial cell-bin CellChat
+- optional kidney ECM-Receptor CellChat branch
 - merged JS/control signaling comparison
 - differential ligand-receptor mapping
 
@@ -91,6 +92,10 @@ Methods represented:
 
 - Downstream regulon analysis:
   `analysis/08_pyscenic/pyscenic_downstream_public.R`
+- Seurat counts export:
+  `analysis/08_pyscenic/export_seurat_counts_for_pyscenic.R`
+- pySCENIC shell template:
+  `analysis/08_pyscenic/run_pyscenic_cli_template.sh`
 - Spatial cell-bin export:
   `analysis/08_pyscenic/spatial_cellbin_export_for_pyscenic.R`
 - Loom creation:
@@ -107,6 +112,8 @@ Methods represented:
 
 - Main script:
   `analysis/09_hdwgcna/hdwgcna_public_workflow.R`
+- TF-network script:
+  `analysis/09_hdwgcna/hdwgcna_tf_network_public.R`
 
 Methods represented:
 
@@ -114,4 +121,6 @@ Methods represented:
 - signed co-expression network inference
 - module eigengenes and kME
 - hub gene export
-- cerebellum GCs/VZP/PKCs and kidney module analysis
+- cerebellum 1021 all-major-celltype module analysis
+- kidney all-major-celltype module analysis
+- JASPAR motif scan and hdWGCNA differential regulons

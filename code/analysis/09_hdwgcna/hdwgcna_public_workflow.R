@@ -1,151 +1,158 @@
-# hdWGCNA workflows for cerebellum and kidney co-expression modules.
+# hdWGCNA module analysis curated from code/Rpr0.
 #
-# Source scripts:
-# - code/Rpro/hdWGCNA/ceball/GC/allGC_hdwgcna.R
-# - code/Rpro/hdWGCNA/ceball/VZP/allVZP_hdwgcna.R
-# - code/Rpro/hdWGCNA/ceball/pkc/allpkc_hdwgcna.R
+# Main source scripts:
+# - code/Rpr0/cebJS/hdWGCNA/1021/finalcebhdwgcna.R
 # - code/Rpr0/kid0326/hdwgcna/hdwgcna.kidney330.R
+# - code/Rpr0/kidney/hdwgcna/wgcna0918.R
 
 source("analysis/00_setup/project_config.R")
 
 suppressPackageStartupMessages({
   library(Seurat)
   library(tidyverse)
+  library(cowplot)
   library(patchwork)
   library(WGCNA)
   library(hdWGCNA)
   library(UCell)
   library(enrichR)
+  library(fgsea)
 })
 
-theme_set(cowplot::theme_cowplot())
+theme_set(theme_cowplot())
 set.seed(12345)
 
 out_dir <- file.path(paths$results, "hdwgcna")
 dir.create(out_dir, recursive = TRUE, showWarnings = FALSE)
 enableWGCNAThreads(nThreads = 8)
 
-prepare_cerebellum_metadata <- function(obj) {
-  obj$group <- obj$orig.ident
-  obj$group[obj$group %in% c("pr", "g6", "g7", "g2", "lu", "wxs")] <- "ctrl"
-  obj$group[obj$group %in% c("wxj", "wxjba", "zjj", "lyh", "lyv", "g5v", "g5h", "ly1ceb")] <- "JS"
-
-  obj$celltype <- as.character(obj$seurat_clusters)
-  obj$celltype[obj$celltype %in% c("11", "6")] <- "UBCs"
-  obj$celltype[obj$celltype %in% c("1", "4", "7", "13", "8")] <- "GCs"
-  obj$celltype[obj$celltype %in% c("9", "12", "15", "17")] <- "INs"
-  obj$celltype[obj$celltype %in% c("5")] <- "PKCs"
-  obj$celltype[obj$celltype %in% c("14")] <- "Cellcycle"
-  obj$celltype[obj$celltype %in% c("0", "2", "3", "10", "16")] <- "VZP"
-
-  obj$name <- obj$orig.ident
+prepare_cerebellum_for_hdwgcna <- function(obj) {
+  if (!"name" %in% colnames(obj@meta.data)) obj$name <- obj$orig.ident
   obj$name[obj$name %in% c("pr", "g6", "g7", "g2", "lu", "wxs")] <- "ctrl"
   obj$name[obj$name %in% c("wxj", "wxjba")] <- "CEP290"
   obj$name[obj$name %in% c("zjj")] <- "CPLANE1"
   obj$name[obj$name %in% c("g5v", "g5h")] <- "TMEM67"
-  obj$name[obj$name %in% c("lyh", "lyv", "ly1ceb")] <- "KIAA0586"
-  obj
+  obj$name[obj$name %in% c("lyh", "lyv", "ly1ceb", "KIAA0586")] <- "OFD1"
+
+  obj$celltype[obj$celltype %in% c("ODC", "OPC", "OPCs&ODC")] <- "OPC&ODC"
+  obj$celltype[obj$celltype %in% c("MICs")] <- "MG"
+  subset(obj, celltype %in% c("Cellcycle", "GCs", "INs", "MG",
+                              "OPC&ODC", "PKCs", "UBCs", "VZP"))
 }
 
-run_hdwgcna_core <- function(obj, group_name, prefix, group.by = "cell_type",
-                             metacell_k = 50, max_shared = 10,
-                             network_tom_name = group_name) {
-  obj <- SetupForWGCNA(obj, gene_select = "fraction", fraction = 0.05, wgcna_name = "tutorial")
+prepare_kidney_for_hdwgcna <- function(obj) {
+  obj$celltype[obj$celltype %in% "Juxtaglomerular"] <- "IC"
+  obj$celltype[obj$celltype %in% "Cycling"] <- "NPC"
+  subset(obj, celltype %in% c("NPC", "Podocyte", "PT", "LOH", "LOH_DTL",
+                              "DCT", "UB_CD", "Stromal", "Endo", "Cycling",
+                              "CD", "Prolif", "TAL", "PODO", "IC", "M",
+                              "CD-PC", "Cycle", "EC", "LOHP", "SC", "MAC"))
+}
+
+run_hdwgcna_all_modules <- function(obj, prefix, min_cells = 50, k = 25,
+                                    max_shared = 10, n_hubs = 30) {
+  obj <- SetupForWGCNA(
+    obj,
+    gene_select = "fraction",
+    fraction = 0.05,
+    wgcna_name = "tutorial"
+  )
   obj$cell_type <- obj$celltype
   obj$Sample <- obj$orig.ident
   obj <- RunHarmony(obj, group.by.vars = "Sample")
   obj <- MetacellsByGroups(
     seurat_obj = obj,
-    group.by = c("cell_type", "Sample"),
+    min_cells = min_cells,
+    group.by = c("Sample", "cell_type"),
     reduction = "harmony",
-    k = metacell_k,
+    k = k,
     max_shared = max_shared,
     ident.group = "cell_type"
   )
   obj <- NormalizeMetacells(obj)
-  obj <- SetDatExpr(obj, group_name = group_name, group.by = group.by, assay = "RNA", layer = "data")
+  obj <- SetDatExpr(obj, group_name = NULL, group.by = NULL, assay = "RNA", layer = "data")
   obj <- TestSoftPowers(obj, networkType = "signed")
 
   pdf(file.path(out_dir, paste0(prefix, "_soft_power.pdf")), width = 8, height = 6)
   print(wrap_plots(PlotSoftPowers(obj), ncol = 2))
   dev.off()
 
-  obj <- ConstructNetwork(obj, tom_name = network_tom_name)
+  obj <- ConstructNetwork(obj, tom_name = "all")
   pdf(file.path(out_dir, paste0(prefix, "_dendrogram.pdf")), width = 10, height = 5)
   PlotDendrogram(obj, main = paste(prefix, "hdWGCNA dendrogram"))
   dev.off()
 
   obj <- ModuleEigengenes(obj, group.by.vars = "Sample")
-  obj <- ModuleConnectivity(obj, group.by = group.by, group_name = group_name)
+  obj <- ModuleConnectivity(obj, group.by = NULL, group_name = NULL)
   obj <- ModuleExprScore(obj, n_genes = 25, method = "UCell")
 
   modules <- GetModules(obj) %>% subset(module != "grey")
-  hub_df <- GetHubGenes(obj, n_hubs = 100)
+  hub_df <- GetHubGenes(obj, n_hubs = n_hubs)
   write.csv(modules, file.path(out_dir, paste0(prefix, "_modules.csv")), row.names = FALSE)
   write.csv(hub_df, file.path(out_dir, paste0(prefix, "_hub_genes.csv")), row.names = FALSE)
 
-  pdf(file.path(out_dir, paste0(prefix, "_KMEs.pdf")), width = 12, height = 9)
+  pdf(file.path(out_dir, paste0(prefix, "_KMEs.pdf")), width = 9, height = 9)
   print(PlotKMEs(obj, ncol = 3))
   dev.off()
 
-  pdf(file.path(out_dir, paste0(prefix, "_module_feature_plots.pdf")), width = 10, height = 8)
-  print(wrap_plots(ModuleFeaturePlot(obj, features = "hMEs", order = TRUE), ncol = 5))
-  print(wrap_plots(ModuleFeaturePlot(obj, features = "scores", order = "shuffle", ucell = TRUE), ncol = 5))
+  pdf(file.path(out_dir, paste0(prefix, "_module_feature_plots.pdf")), width = 10, height = 10)
+  print(wrap_plots(ModuleFeaturePlot(obj, features = "hMEs", order = TRUE), ncol = 3))
+  print(wrap_plots(ModuleFeaturePlot(obj, features = "scores", order = "shuffle", ucell = TRUE), ncol = 3))
   dev.off()
+
+  MEs <- GetMEs(obj, harmonized = TRUE)
+  obj@meta.data <- cbind(obj@meta.data, MEs)
+  mods <- levels(GetModules(obj)$module)
+  mods <- mods[mods != "grey"]
+
+  pdf(file.path(out_dir, paste0(prefix, "_module_dotplots.pdf")), width = 7, height = 8)
+  print(DotPlot(obj, features = mods, group.by = "celltype") + RotatedAxis() +
+          scale_color_gradient2(high = "red", mid = "grey95", low = "blue"))
+  if ("group" %in% colnames(obj@meta.data)) print(DotPlot(obj, features = mods, group.by = "group") + RotatedAxis())
+  if ("name" %in% colnames(obj@meta.data)) print(DotPlot(obj, features = mods, group.by = "name") + RotatedAxis())
+  if ("geneotype" %in% colnames(obj@meta.data)) print(DotPlot(obj, features = mods, group.by = "geneotype") + RotatedAxis())
+  dev.off()
+
+  dme_group_1 <- rownames(obj@meta.data)[obj$group == "JS"]
+  dme_group_2 <- rownames(obj@meta.data)[obj$group != "JS"]
+  if (length(dme_group_1) > 0 && length(dme_group_2) > 0) {
+    DMEs <- FindDMEs(obj, barcodes1 = dme_group_1, barcodes2 = dme_group_2,
+                     test.use = "wilcox", wgcna_name = "tutorial")
+    write.csv(DMEs, file.path(out_dir, paste0(prefix, "_DMEs_JS_vs_ctrl.csv")), row.names = FALSE)
+    pdf(file.path(out_dir, paste0(prefix, "_DMEs_lollipop.pdf")), width = 6, height = 6)
+    print(PlotDMEsLollipop(obj, DMEs, wgcna_name = "tutorial", pvalue = "p_val_adj"))
+    dev.off()
+  }
 
   obj
 }
 
 cerebellum_file <- file.path(paths$data, "controlled/seurat/cerebellum_final_reference.rds")
 if (file.exists(cerebellum_file)) {
-  cerebellum <- prepare_cerebellum_metadata(readRDS(cerebellum_file))
-  for (ct in c("GCs", "VZP", "PKCs")) {
-    ct_obj <- run_hdwgcna_core(cerebellum, group_name = ct, prefix = paste0("cerebellum_", ct))
-    saveRDS(ct_obj, file.path(out_dir, paste0("cerebellum_", ct, "_hdWGCNA.rds")))
-  }
+  cerebellum <- prepare_cerebellum_for_hdwgcna(readRDS(cerebellum_file))
+  cerebellum_hdwgcna <- run_hdwgcna_all_modules(
+    cerebellum,
+    prefix = "cerebellum_1021_all_celltypes",
+    min_cells = 50,
+    k = 25,
+    max_shared = 10,
+    n_hubs = 30
+  )
+  saveRDS(cerebellum_hdwgcna,
+          file.path(out_dir, "cerebellum_1021_all_celltypes_hdwgcna.rds"))
 }
 
 kidney_file <- file.path(paths$data, "controlled/seurat/kidney_final.rds")
 if (file.exists(kidney_file)) {
-  kidney <- readRDS(kidney_file)
-  kidney_cells <- c("NPC", "Podocyte", "PT", "LOH", "LOH_DTL", "DCT", "UB_CD", "Stromal", "Endo", "Cycling")
-  kidney <- subset(kidney, celltype %in% kidney_cells)
-  kidney$celltype[kidney$celltype == "Cycling"] <- "NPC"
-  kidney$celltype <- droplevels(kidney$celltype)
-
-  kidney <- SetupForWGCNA(kidney, gene_select = "fraction", fraction = 0.05, wgcna_name = "tutorial")
-  kidney$cell_type <- kidney$celltype
-  kidney$Sample <- kidney$orig.ident
-  kidney <- RunHarmony(kidney, group.by.vars = "Sample")
-  kidney <- MetacellsByGroups(
-    seurat_obj = kidney,
-    group.by = c("Sample", "cell_type"),
-    reduction = "harmony",
-    ident.group = "cell_type"
+  kidney <- prepare_kidney_for_hdwgcna(readRDS(kidney_file))
+  kidney_hdwgcna <- run_hdwgcna_all_modules(
+    kidney,
+    prefix = "kidney_330_or_918_all_celltypes",
+    min_cells = 90,
+    k = 25,
+    max_shared = 10,
+    n_hubs = 10
   )
-  kidney <- NormalizeMetacells(kidney)
-  kidney <- SetDatExpr(kidney, group_name = NULL, group.by = NULL, assay = "RNA", layer = "data")
-  kidney <- TestSoftPowers(kidney, networkType = "signed")
-  kidney <- ConstructNetwork(kidney, tom_name = "all")
-  kidney <- ModuleEigengenes(kidney, group.by.vars = "Sample")
-  kidney <- ModuleConnectivity(kidney, group.by = NULL, group_name = NULL)
-  kidney <- ModuleExprScore(kidney, n_genes = 25, method = "UCell")
-
-  modules <- GetModules(kidney) %>% subset(module != "grey")
-  write.csv(modules, file.path(out_dir, "kidney_modules.csv"), row.names = FALSE)
-  write.csv(GetHubGenes(kidney, n_hubs = 100), file.path(out_dir, "kidney_hub_genes.csv"), row.names = FALSE)
-
-  MEs <- GetMEs(kidney, harmonized = TRUE)
-  kidney@meta.data <- cbind(kidney@meta.data, MEs)
-  mods <- levels(GetModules(kidney)$module)
-  mods <- mods[mods != "grey"]
-
-  pdf(file.path(out_dir, "kidney_module_dotplots.pdf"), width = 7, height = 8)
-  print(DotPlot(kidney, features = mods, group.by = "celltype") + RotatedAxis() +
-          scale_color_gradient2(high = "#E25857", mid = "lightgrey", low = "#6EB65A"))
-  if ("group" %in% colnames(kidney@meta.data)) print(DotPlot(kidney, features = mods, group.by = "group") + RotatedAxis())
-  if ("geneotype" %in% colnames(kidney@meta.data)) print(DotPlot(kidney, features = mods, group.by = "geneotype") + RotatedAxis())
-  dev.off()
-
-  saveRDS(kidney, file.path(out_dir, "kidney_hdwgcna.rds"))
+  saveRDS(kidney_hdwgcna,
+          file.path(out_dir, "kidney_330_or_918_all_celltypes_hdwgcna.rds"))
 }

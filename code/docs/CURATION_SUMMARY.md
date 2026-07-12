@@ -10,7 +10,8 @@ folder keeps the core manuscript-facing analysis in a cleaner form.
 - kidney SoupX branch
 - cell-bin Stereo-seq object construction and label transfer
 - bulk RNA-seq DESeq2/GO workflow
-- CellChat, pySCENIC and hdWGCNA as separate modules
+- CellChat, pySCENIC/SCENIC and hdWGCNA as separate modules, curated from
+  `code/Rpr0`
 - figure-oriented outputs and public-safe metadata templates
 
 ## Simplified
@@ -28,6 +29,8 @@ folder keeps the core manuscript-facing analysis in a cleaner form.
 - unused visualization helper folder
 - duplicated GO/plot trials that were not tied to manuscript outputs
 - large intermediate objects and private human fetal data matrices
+
+See `docs/RPR0_SOURCE_INVENTORY.md` for the exact source-script mapping.
 
 ## Important boundary
 

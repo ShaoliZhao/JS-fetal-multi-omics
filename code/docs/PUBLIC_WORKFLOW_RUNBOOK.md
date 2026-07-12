@@ -110,20 +110,23 @@ Rscript analysis/07_cellchat/cellchat_public_workflows.R
 
 Key settings:
 
-- kidney CellChat: `type = "truncatedMean"`, `trim = 0.01`, `min.cells = 10`
-- spatial CellChat: cell-bin coordinates, `ratio = 0.5`, `tol = 10`,
-  `interaction.range = 20`, `contact.range = 10`
-- spatial OFD1 trim: 0.1
-- spatial control trim: 0.5
+- cerebellum CellChat: VZP/IN/PKC/GC/UBC/Cycling subset, full CellChatDB,
+  `type = "truncatedMean"`, `trim = 0.01`, `min.cells = 10`
+- kidney updated CellChat: NPC/Podocyte/PT/LOH/LOH_DTL/DCT/UB_CD/Stromal/Endo/Cycling,
+  full CellChatDB, `trim = 0.01`, `min.cells = 10`
+- kidney ECM branch: optional older ECM-Receptor workflow, `trim = 0.1`
+- differential LR mapping: `thresh.pc = 0.1`, `thresh.fc = 0.05`, `thresh.p = 0.05`
 
 ## 7. pySCENIC
 
 Run after pySCENIC loom and adjacency outputs are available:
 
 ```bash
+Rscript analysis/08_pyscenic/export_seurat_counts_for_pyscenic.R
+python analysis/08_pyscenic/make_loom_from_matrix.py
+bash analysis/08_pyscenic/run_pyscenic_cli_template.sh
 Rscript analysis/08_pyscenic/pyscenic_downstream_public.R
 Rscript analysis/08_pyscenic/spatial_cellbin_export_for_pyscenic.R
-python analysis/08_pyscenic/make_loom_from_matrix.py
 ```
 
 Key outputs:
@@ -132,6 +135,8 @@ Key outputs:
 - RSS plots by cell type/group/genotype
 - top TF-target GO enrichment
 - top TF-target network plots
+- cerebellum RSS thresholds from Rpr0: celltype 2, group 1, name 1.2
+- kidney RSS thresholds from Rpr0: celltype 2.5, group 1, geneotype 1.2
 
 ## 8. hdWGCNA
 
@@ -139,11 +144,16 @@ Run:
 
 ```bash
 Rscript analysis/09_hdwgcna/hdwgcna_public_workflow.R
+Rscript analysis/09_hdwgcna/hdwgcna_tf_network_public.R
 ```
 
 Key settings:
 
 - `gene_select = "fraction"`, `fraction = 0.05`
 - Harmony by sample before metacell construction
-- cerebellum modules are run separately for GCs, VZP and PKCs
-- kidney module analysis uses nephron/stromal/endothelial major cell states
+- cerebellum 1021 branch uses Cellcycle/GCs/INs/MG/OPC&ODC/PKCs/UBCs/VZP
+- cerebellum metacells: `min_cells = 50`, `k = 25`, `max_shared = 10`
+- kidney branch uses nephron/stromal/endothelial major cell states
+- kidney metacells: `min_cells = 90`, `k = 25`, `max_shared = 10`
+- hdWGCNA TF branch uses JASPAR motif scan, `AssignTFRegulons(strategy = "C", reg_thresh = 0.1)`,
+  positive regulons and negative regulons with `cor_thresh = -0.05`

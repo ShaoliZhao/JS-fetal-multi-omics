@@ -84,7 +84,9 @@ Then replace the relative paths in `metadata/snrna_sample_sheet_public_template.
   `analysis/05_bulk_multiomics/bulk_deseq2_go_figures.R`
 - Monocle2 trajectories and scVelo velocity: `analysis/06_lineage_velocity/`
 - CellChat workflows: `analysis/07_cellchat/cellchat_public_workflows.R`
-- pySCENIC downstream analysis and spatial loom export: `analysis/08_pyscenic/`
-- hdWGCNA co-expression modules: `analysis/09_hdwgcna/hdwgcna_public_workflow.R`
+- pySCENIC/SCENIC export, command template and RSS downstream analysis:
+  `analysis/08_pyscenic/`
+- hdWGCNA co-expression modules and hdWGCNA TF networks:
+  `analysis/09_hdwgcna/`
 
 This is the version I would show to reviewers, collaborators, or pharmaceutical internship interviewers.
