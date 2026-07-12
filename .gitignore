@@ -1,0 +1,16 @@
+.DS_Store
+__pycache__/
+*.RDS
+*.rds
+*.RData
+*.Rdata
+*.h5ad
+*.h5seurat
+*.loom
+*.bam
+*.bai
+*.fastq.gz
+*.fq.gz
+/data/
+/results/
+/figures/

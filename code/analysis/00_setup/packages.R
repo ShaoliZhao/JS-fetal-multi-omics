@@ -1,0 +1,17 @@
+suppressPackageStartupMessages({
+  library(Seurat)
+  library(dplyr)
+  library(tidyr)
+  library(readr)
+  library(purrr)
+  library(tibble)
+  library(ggplot2)
+  library(patchwork)
+  library(Matrix)
+  library(clusterProfiler)
+  library(org.Hs.eg.db)
+  library(ComplexHeatmap)
+  library(CellChat)
+})
+
+message("Core packages loaded. Add hdWGCNA, monocle, SCENIC, or spatial packages only in modules that need them.")

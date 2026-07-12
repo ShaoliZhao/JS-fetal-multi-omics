@@ -1,0 +1,15 @@
+.DS_Store
+*.RDS
+*.rds
+*.RData
+*.Rdata
+*.h5ad
+*.h5seurat
+*.loom
+*.bam
+*.bai
+*.fastq.gz
+*.fq.gz
+/data/
+/results/
+/figures/
