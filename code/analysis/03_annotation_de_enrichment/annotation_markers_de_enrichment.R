@@ -89,7 +89,8 @@ for (i in seq_len(nrow(objects))) {
     ggsave(file.path(fig_dir, paste0(dataset, "_celltype_composition.pdf")), p, width = 5, height = 4)
 
     for (ct in levels(obj[[celltype_col]][, 1])) {
-      sub <- subset(obj, subset = .data[[celltype_col]] == ct)
+      ct_cells <- colnames(obj)[obj@meta.data[[celltype_col]] == ct]
+      sub <- subset(obj, cells = ct_cells)
       if (!all(c("ctrl", "JS") %in% sub[[group_col]][, 1])) next
       if (min(table(sub[[group_col]][, 1])) < 20) next
 
