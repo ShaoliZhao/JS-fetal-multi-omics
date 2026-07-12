@@ -65,13 +65,14 @@ Methods represented:
 
 - featureCounts matrix assembly
 - DESeq2 JS/control contrasts
-- genotype-specific kidney contrasts
 - GO enrichment and DEG set export
 
 ## Lineage and velocity
 
-- Monocle:
-  `analysis/06_lineage_velocity/monocle_lineage_template.R`
+- Monocle2:
+  `analysis/06_lineage_velocity/monocle2_ddrtree_lineage.R`
+- Monocle3:
+  `analysis/06_lineage_velocity/monocle3_graph_lineage.R`
 - scVelo:
   `analysis/06_lineage_velocity/scvelo_velocity_template.py`
 

@@ -1,8 +1,5 @@
 # Label transfer and cell-type-specific spatial DEG for cell-bin Stereo-seq.
-#
-# Source provenance: code/ST_code_backup/Rpro/ana/integrate/stintegrate.R.
-# The public version starts from the annotated cell-bin object produced by
-# cellbin_build_and_annotation.R and the final cerebellar snRNA-seq Seurat object.
+# Start from the annotated cell-bin object and the final cerebellar snRNA-seq object.
 
 source("analysis/00_setup/project_config.R")
 source("analysis/04_spatial_transcriptomics/STimport_public.R")
@@ -15,7 +12,7 @@ suppressPackageStartupMessages({
 })
 
 spatial_obj_file <- file.path(paths$results, "spatial_cellbin/cellbin_brain_merge_annotated.rds")
-reference_file <- file.path(paths$data, "controlled/seurat/cerebellum_final_reference.rds")
+reference_file <- file.path(paths$data_processed, "seurat", "cerebellum_final_reference.rds")
 out_dir <- file.path(paths$results, "spatial_label_transfer_deg")
 dir.create(out_dir, recursive = TRUE, showWarnings = FALSE)
 

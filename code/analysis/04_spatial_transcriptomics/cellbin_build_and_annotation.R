@@ -1,9 +1,5 @@
 # Build and annotate JS/control cerebellar cell-bin Stereo-seq objects.
-#
-# Source provenance: code/ST_code_backup/Rpro/ana/cellbin/trycellbin.R.
-# The script keeps the manuscript workflow and thresholds, but replaces private
-# server paths with local variables. Supply the two Stereo-seq cell-bin Seurat
-# objects below before running.
+# Start from Seurat cell-bin RDS files converted from Stereo-seq GEF/H5AD files.
 
 source("analysis/00_setup/project_config.R")
 source("analysis/04_spatial_transcriptomics/STimport_public.R")
@@ -17,8 +13,8 @@ suppressPackageStartupMessages({
   library(patchwork)
 })
 
-ofd1_rds <- file.path(paths$data, "controlled/spatial/OFD1_cellbin_raw.rds")
-ctrl_rds <- file.path(paths$data, "controlled/spatial/control_w18_cellbin_raw.rds")
+ofd1_rds <- file.path(paths$data_external, "spatial", "OFD1_cellbin_raw.rds")
+ctrl_rds <- file.path(paths$data_external, "spatial", "control_w18_cellbin_raw.rds")
 out_dir <- file.path(paths$results, "spatial_cellbin")
 dir.create(out_dir, recursive = TRUE, showWarnings = FALSE)
 
@@ -101,8 +97,6 @@ brain_merge$celltype[brain_merge$celltype %in% c("2")] <- "STR"
 brain_merge$celltype[brain_merge$celltype %in% c("12")] <- "Cycling"
 brain_merge$celltype[brain_merge$celltype %in% c("15")] <- "CFAP298_hi"
 
-# Clusters 24-26 were excluded in the original analysis because they did not
-# represent interpretable cerebellar cell-bin domains.
 brain_merge <- subset(brain_merge, seurat_clusters %in% as.character(0:23))
 
 pdf(file.path(out_dir, "cellbin_celltype_annotation.pdf"), width = 10, height = 5)

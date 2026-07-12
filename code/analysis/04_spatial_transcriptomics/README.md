@@ -1,15 +1,10 @@
 # Spatial Transcriptomics
 
-This folder contains the public cell-bin Stereo-seq workflow curated from
-`code/ST_code_backup`.
-
-`ST_code_backup` is not a final public analysis folder. It is a historical
-backup of spatial scripts, including cell-bin object construction, spatial
-label transfer, spatial CellChat, pySCENIC input conversion and older trials.
-The useful manuscript-facing pieces were kept here as shorter, path-safe
-scripts:
+This folder contains the public cell-bin Stereo-seq workflow.
 
 - `STimport_public.R`: colors and spatial plotting helpers.
+- `export_cellbin_gef_to_h5ad.py`: Stereo-seq `.gef` cell-bin export to
+  Seurat-style `.h5ad`.
 - `cellbin_build_and_annotation.R`: OFD1/control cell-bin object construction,
   SCT/PCA/UMAP/clustering, manual cell-type annotation and PKC comparison.
 - `st_label_transfer_and_celltype_deg.R`: snRNA-seq reference label transfer

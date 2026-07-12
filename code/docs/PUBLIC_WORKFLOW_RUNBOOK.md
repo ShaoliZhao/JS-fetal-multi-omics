@@ -64,7 +64,7 @@ Rscript analysis/04_spatial_transcriptomics/cellbin_build_and_annotation.R
 Rscript analysis/04_spatial_transcriptomics/st_label_transfer_and_celltype_deg.R
 ```
 
-Key settings retained from the original scripts:
+Key settings:
 
 - `SCTransform(..., assay = "Spatial", return.only.var.genes = FALSE)`
 - PCA/neighbor/UMAP dims 1:30
@@ -89,14 +89,15 @@ Key settings:
 - rows retained with `rowSums(counts) > 10`
 - DESeq2 `fitType = "mean"`
 - cerebellum DEG: `padj < 0.05` and `abs(log2FoldChange) > 0.5`
-- kidney genotype contrasts: `pvalue < 0.05` and `abs(log2FoldChange) > 0.5`
+- JS/control DEG threshold: adjusted P value < 0.05 and abs(log2FoldChange) > 0.5
 
 ## 5. Trajectory and RNA velocity
 
 Run the relevant script after providing processed Seurat/h5ad/loom inputs:
 
 ```bash
-Rscript analysis/06_lineage_velocity/monocle_lineage_template.R
+Rscript analysis/06_lineage_velocity/monocle2_ddrtree_lineage.R
+Rscript analysis/06_lineage_velocity/monocle3_graph_lineage.R
 python analysis/06_lineage_velocity/scvelo_velocity_template.py
 ```
 
@@ -135,8 +136,8 @@ Key outputs:
 - RSS plots by cell type/group/genotype
 - top TF-target GO enrichment
 - top TF-target network plots
-- cerebellum RSS thresholds from Rpr0: celltype 2, group 1, name 1.2
-- kidney RSS thresholds from Rpr0: celltype 2.5, group 1, geneotype 1.2
+- cerebellum RSS thresholds: celltype 2, group 1, name 1.2
+- kidney RSS thresholds: celltype 2.5, group 1, geneotype 1.2
 
 ## 8. hdWGCNA
 

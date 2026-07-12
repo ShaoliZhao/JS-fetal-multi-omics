@@ -1,6 +1,4 @@
 # Export the spatial cell-bin object to pySCENIC-compatible Matrix Market files.
-#
-# Source provenance: code/ST_code_backup/Rpro/ana/cellbin/0127/pyscenic/changest.R.
 
 source("analysis/00_setup/project_config.R")
 
@@ -10,13 +8,13 @@ suppressPackageStartupMessages({
   library(dplyr)
 })
 
-brain_file <- file.path(paths$results, "spatial_cellbin/cellbin_brain_merge_annotated.rds")
-out_dir <- file.path(paths$results, "pyscenic/spatial_cellbin_matrix")
+brain_file <- file.path(paths$results, "spatial_cellbin", "cellbin_brain_merge_annotated.rds")
+out_dir <- file.path(paths$results, "pyscenic", "spatial_cellbin_matrix")
 dir.create(out_dir, recursive = TRUE, showWarnings = FALSE)
 
 brain_merge <- readRDS(brain_file)
 DefaultAssay(brain_merge) <- "Spatial"
-counts <- GetAssayData(brain_merge, assay = "Spatial", slot = "counts")
+counts <- GetAssayData(brain_merge, assay = "Spatial", layer = "counts")
 
 writeMM(counts, file.path(out_dir, "matrix.mtx"))
 write.table(rownames(counts), file.path(out_dir, "genes.tsv"),

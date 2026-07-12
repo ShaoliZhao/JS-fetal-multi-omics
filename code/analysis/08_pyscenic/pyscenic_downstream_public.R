@@ -1,9 +1,4 @@
-# pySCENIC / SCENIC downstream analysis curated from code/Rpr0.
-#
-# Main source scripts:
-# - code/Rpr0/cebJS/pyscenic/ana928/scenicceb.R
-# - code/Rpr0/kid0326/pyscenic/rana/pyscenic.kid.downstream.R
-# - code/Rpr0/kidney/pyscenic/0918/fig/kd7pyscenic918.R
+# pySCENIC / SCENIC downstream analysis.
 
 source("analysis/00_setup/project_config.R")
 

@@ -1,10 +1,6 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# pySCENIC command template curated from:
-# - code/Rpr0/cebJS/pyscenic/0928/try0928.sh
-# - code/Rpr0/kid0326/pyscenic/try330pyscenic.kid.sh
-#
 # Required inputs:
 #   1. loom file made from expression counts
 #   2. human TF list

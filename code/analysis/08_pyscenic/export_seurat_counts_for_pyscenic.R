@@ -1,8 +1,4 @@
 # Export Seurat RNA counts for pySCENIC.
-#
-# Sources:
-# - code/Rpr0/cebJS/scdblfinderJSceb.R wrote cc14counts.csv
-# - code/Rpr0/kid0326/pyscenic/kidpyscenic.R wrote Matrix Market files
 
 source("analysis/00_setup/project_config.R")
 
