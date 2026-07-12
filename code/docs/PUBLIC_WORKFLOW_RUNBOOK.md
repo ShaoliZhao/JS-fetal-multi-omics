@@ -1,172 +1,149 @@
 # Public Workflow Runbook
 
-This runbook describes how to execute the public-safe workflows after controlled-access inputs are placed on a local workstation or analysis server.
+This repository is a controlled-input workflow. It is not meant to rebuild the
+full atlas from BAM files alone. To rerun the analysis, provide local
+Cell Ranger filtered matrices, SoupX-compatible kidney Cell Ranger output
+folders, processed Seurat objects, featureCounts tables and pySCENIC/CellChat
+intermediate files where noted.
 
-## 1. Configure Project Root
-
-Run commands from the `curated_code/` folder, or set:
+Set the project root before running:
 
 ```bash
 export JS_MULTIOMICS_ROOT=/path/to/curated_code
 ```
 
-The scripts write outputs to:
+## 1. snRNA-seq atlas
 
-```text
-results/
-figures/
-```
+Input:
 
-These folders are ignored by `.gitignore`.
+- `metadata/snrna_sample_sheet_public_template.csv`
+- local `filtered_feature_bc_matrix` folders
+- SoupX-compatible Cell Ranger output folders for kidney samples
 
-## 2. Update Sample Sheet
-
-Edit:
-
-```text
-metadata/snrna_sample_sheet_public_template.csv
-```
-
-The sample and QC columns are derived from `JS_supplementary_sample_information.xlsx`, sheet `Sample_summary`.
-
-Replace the placeholder paths:
-
-```text
-data/controlled/cellranger/<sample_id>/outs
-data/controlled/cellranger/<sample_id>/outs/filtered_feature_bc_matrix
-```
-
-with local Cell Ranger output paths.
-
-## 3. Build snRNA-seq Atlases
+Run:
 
 ```bash
 Rscript analysis/02_snRNAseq_atlas/seurat_qc_integration_template.R
 ```
 
-Expected controlled inputs:
+Key settings:
 
-- Cell Ranger filtered matrices for cerebellum.
-- Cell Ranger `outs/` folders for kidney SoupX correction.
+- cerebellum minimum features: 800
+- kidney minimum features: 600
+- kidney ambient RNA correction: SoupX
+- doublet handling: DoubletFinder for cerebellum, scDblFinder for kidney
+- Seurat integration/clustering: PCA/CCA, dims 1:30, resolution recorded in the script
 
-Main outputs:
+## 2. Annotation, markers and cell-type DEG
 
-- `results/cerebellum_atlas_public_workflow.rds`
-- `results/kidney_atlas_public_workflow.rds`
-- QC UMAP and violin plots in `figures/`
+Input:
 
-## 4. Run Annotation, Markers, DE and GO
+- processed cerebellum or kidney Seurat object
 
-```bash
-Rscript analysis/03_annotation_de_enrichment/annotation_markers_de_enrichment.R \
-  --object results/cerebellum_atlas_public_workflow.rds \
-  --prefix cerebellum \
-  --celltype-col celltype \
-  --group-col group \
-  --ident1 JS \
-  --ident2 ctrl
-```
-
-For kidney:
+Run:
 
 ```bash
-Rscript analysis/03_annotation_de_enrichment/annotation_markers_de_enrichment.R \
-  --object results/kidney_atlas_public_workflow.rds \
-  --prefix kidney \
-  --celltype-col celltype \
-  --group-col group \
-  --ident1 JS \
-  --ident2 ctrl
+Rscript analysis/03_annotation_de_enrichment/annotation_markers_de_enrichment.R
 ```
 
-## 5. Run Spatial Label Transfer
+This script writes marker tables, cell-type-specific JS/control contrasts, GO
+tables and cell-type composition summaries.
+
+## 3. Cell-bin spatial transcriptomics
+
+Input:
+
+- OFD1 and control Stereo-seq cell-bin Seurat objects with `Spatial` counts and
+  `x/y` coordinates
+- final cerebellar snRNA-seq reference object for label transfer
+
+Run:
 
 ```bash
-Rscript analysis/04_spatial_transcriptomics/stereo_label_transfer_spatial_plots.R \
-  --reference results/cerebellum_atlas_public_workflow.rds \
-  --spatial results/stereo_cellbin_object.rds \
-  --prefix ofd1_cellbin \
-  --celltype-col celltype \
-  --x-col spatial_x \
-  --y-col spatial_y \
-  --genes NRN1,BARHL1,S100B,CALB1
+Rscript analysis/04_spatial_transcriptomics/cellbin_build_and_annotation.R
+Rscript analysis/04_spatial_transcriptomics/st_label_transfer_and_celltype_deg.R
 ```
 
-Expected controlled inputs:
+Key settings retained from the original scripts:
 
-- annotated cerebellar snRNA-seq Seurat object;
-- Stereo-seq/cell-bin Seurat object with expression matrix and coordinate metadata.
+- `SCTransform(..., assay = "Spatial", return.only.var.genes = FALSE)`
+- PCA/neighbor/UMAP dims 1:30
+- merged cell-bin marker threshold: `logfc.threshold = 0.5`
+- spatial cell-type DEG threshold: `p_val < 0.05` and `abs(avg_log2FC) > 0.5`
+- PKC inner/outer comparison: `logfc.threshold = 0.3`, `min.diff.pct = 0.1`
 
-## 6. Run Bulk Multi-omics Summaries
+## 4. Bulk RNA-seq
+
+Input:
+
+- featureCounts `.txt` files for cerebellum and kidney bulk RNA-seq
+
+Run:
 
 ```bash
-Rscript analysis/05_bulk_multiomics/bulk_multiomics_summary_plots.R \
-  --sample-meta metadata/bulk_sample_metadata_public_template.csv \
-  --matrix data/processed/bulk_rna_normalized_matrix.csv \
-  --de-dir data/processed/bulk_de_tables \
-  --prefix bulk_multiomics
+Rscript analysis/05_bulk_multiomics/bulk_deseq2_go_figures.R
 ```
 
-This module works on public-safe processed summary tables, not raw FASTQ/BAM files.
+Key settings:
 
-## 7. Run Lineage and Velocity
+- rows retained with `rowSums(counts) > 10`
+- DESeq2 `fitType = "mean"`
+- cerebellum DEG: `padj < 0.05` and `abs(log2FoldChange) > 0.5`
+- kidney genotype contrasts: `pvalue < 0.05` and `abs(log2FoldChange) > 0.5`
 
-Monocle2:
+## 5. Trajectory and RNA velocity
+
+Run the relevant script after providing processed Seurat/h5ad/loom inputs:
 
 ```bash
-Rscript analysis/06_lineage_velocity/monocle_lineage_template.R \
-  --object results/kidney_atlas_public_workflow.rds \
-  --prefix kidney_npc_nephron \
-  --subset-col celltype \
-  --subset-values NPC,Podocyte,PT,LOH,LOH_DTL,DCT \
-  --group-col group \
-  --celltype-col celltype
+Rscript analysis/06_lineage_velocity/monocle_lineage_template.R
+python analysis/06_lineage_velocity/scvelo_velocity_template.py
 ```
 
-scVelo:
+## 6. CellChat
+
+Run:
 
 ```bash
-python analysis/06_lineage_velocity/scvelo_velocity_template.py \
-  --h5ad results/kidney_velocity_input.h5ad \
-  --loom data/controlled/velocity/sample1.loom data/controlled/velocity/sample2.loom \
-  --celltype-col celltype \
-  --basis umap \
-  --output-prefix results/kidney_velocity
+Rscript analysis/07_cellchat/cellchat_public_workflows.R
 ```
 
-## 8. Run Network and Signaling Modules
+Key settings:
 
-CellChat:
+- kidney CellChat: `type = "truncatedMean"`, `trim = 0.01`, `min.cells = 10`
+- spatial CellChat: cell-bin coordinates, `ratio = 0.5`, `tol = 10`,
+  `interaction.range = 20`, `contact.range = 10`
+- spatial OFD1 trim: 0.1
+- spatial control trim: 0.5
+
+## 7. pySCENIC
+
+Run after pySCENIC loom and adjacency outputs are available:
 
 ```bash
-Rscript analysis/07_networks_signaling/hdwgcna_pyscenic_cellchat_templates.R \
-  --mode cellchat \
-  --object results/kidney_atlas_public_workflow.rds \
-  --prefix kidney \
-  --celltype-col celltype \
-  --group-col group
+Rscript analysis/08_pyscenic/pyscenic_downstream_public.R
+Rscript analysis/08_pyscenic/spatial_cellbin_export_for_pyscenic.R
+python analysis/08_pyscenic/make_loom_from_matrix.py
 ```
 
-pySCENIC input export:
+Key outputs:
+
+- regulon AUC added to Seurat metadata
+- RSS plots by cell type/group/genotype
+- top TF-target GO enrichment
+- top TF-target network plots
+
+## 8. hdWGCNA
+
+Run:
 
 ```bash
-Rscript analysis/07_networks_signaling/hdwgcna_pyscenic_cellchat_templates.R \
-  --mode pyscenic_export \
-  --object results/kidney_atlas_public_workflow.rds \
-  --prefix kidney
+Rscript analysis/09_hdwgcna/hdwgcna_public_workflow.R
 ```
 
-hdWGCNA setup:
+Key settings:
 
-```bash
-Rscript analysis/07_networks_signaling/hdwgcna_pyscenic_cellchat_templates.R \
-  --mode hdwgcna \
-  --object results/kidney_atlas_public_workflow.rds \
-  --prefix kidney \
-  --celltype-col celltype \
-  --group-col group
-```
-
-## Reproducibility Boundary
-
-Public BAM files support read-level provenance, but the final atlas workflows require matrix-level outputs and processed objects. This repository is therefore designed as a controlled-input workflow rather than a one-click public reanalysis package.
+- `gene_select = "fraction"`, `fraction = 0.05`
+- Harmony by sample before metacell construction
+- cerebellum modules are run separately for GCs, VZP and PKCs
+- kidney module analysis uses nephron/stromal/endothelial major cell states

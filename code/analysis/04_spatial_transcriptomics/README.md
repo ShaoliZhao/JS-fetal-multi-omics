@@ -1,13 +1,18 @@
 # Spatial Transcriptomics
 
-This module represents the Stereo-seq cerebellar vermis workflow used for Figure 2, Figure 5, Supplementary Figure 5, and Supplementary Figure 6.
+This folder contains the public cell-bin Stereo-seq workflow curated from
+`code/ST_code_backup`.
 
-Core public-facing steps:
+`ST_code_backup` is not a final public analysis folder. It is a historical
+backup of spatial scripts, including cell-bin object construction, spatial
+label transfer, spatial CellChat, pySCENIC input conversion and older trials.
+The useful manuscript-facing pieces were kept here as shorter, path-safe
+scripts:
 
-- normalize cell-bin expression objects
-- transfer cell-type labels from the snRNA-seq cerebellar atlas
-- plot predicted spatial cell states
-- map marker genes and module scores
-- summarize local spatial organization
+- `STimport_public.R`: colors and spatial plotting helpers.
+- `cellbin_build_and_annotation.R`: OFD1/control cell-bin object construction,
+  SCT/PCA/UMAP/clustering, manual cell-type annotation and PKC comparison.
+- `st_label_transfer_and_celltype_deg.R`: snRNA-seq reference label transfer
+  and cell-type-specific OFD1 vs control spatial DEG/GO.
 
-For an interactive web atlas, this module would become the data-preparation backend: export downsampled coordinates, predicted labels, module scores, and selected gene expression values as compressed web tables.
+The spatial CellChat workflow is separated into `analysis/07_cellchat/`.

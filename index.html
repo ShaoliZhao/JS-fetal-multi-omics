@@ -16,10 +16,12 @@
           <span>Fetal Joubert Atlas</span>
         </a>
         <div class="nav-links">
-          <a href="#atlas">Atlas</a>
-          <a href="#figures">Figures</a>
+          <a href="#overview">Overview</a>
+          <a href="#deg">DEG</a>
+          <a href="#expression">Expression</a>
+          <a href="#networks">Networks</a>
+          <a href="#cellchat">CellChat</a>
           <a href="#code">Code</a>
-          <a href="#reproduce">Reproducibility</a>
         </div>
       </nav>
     </header>
@@ -35,7 +37,7 @@
             metabolomics, trajectory inference, regulatory networks and cell-cell communication.
           </p>
           <div class="hero-actions">
-            <a class="button primary" href="#figures">View main figures</a>
+            <a class="button primary" href="#overview">Explore atlas</a>
             <a class="button" href="#code">Browse analysis code</a>
           </div>
         </div>
@@ -51,7 +53,7 @@
         <div><strong>4</strong><span>JS genes: CEP290, CPLANE1, TMEM67, OFD1</span></div>
       </section>
 
-      <section id="atlas" class="section">
+      <section id="overview" class="section">
         <div class="section-head">
           <p class="eyebrow">Atlas logic</p>
           <h2>From genotype to vulnerable cell states, spatial context and targetable pathways.</h2>
@@ -82,6 +84,42 @@
             <h3>Mechanism discovery</h3>
             <p>DE, GO, Monocle, scVelo, CellChat, pySCENIC and hdWGCNA identify disease-relevant programs.</p>
           </article>
+        </div>
+      </section>
+
+      <section id="deg" class="section atlas-panel">
+        <div class="section-head">
+          <p class="eyebrow">Differential genes</p>
+          <h2>Cell-type and tissue-level contrasts are kept close to the figures.</h2>
+          <p>
+            The code keeps the original thresholds visible: cerebellum bulk DEG uses adjusted p value and log2FC,
+            kidney genotype contrasts use p value and log2FC, and spatial cell-bin DEG uses cell-type-specific
+            OFD1-control comparisons.
+          </p>
+        </div>
+        <div class="method-strip">
+          <a href="code/analysis/03_annotation_de_enrichment/annotation_markers_de_enrichment.R">snRNA-seq DEG</a>
+          <a href="code/analysis/04_spatial_transcriptomics/st_label_transfer_and_celltype_deg.R">spatial DEG</a>
+          <a href="code/analysis/05_bulk_multiomics/bulk_deseq2_go_figures.R">bulk DESeq2</a>
+        </div>
+      </section>
+
+      <section id="expression" class="section expression-panel">
+        <div class="section-head compact">
+          <p class="eyebrow">Gene expression plots</p>
+          <h2>Cell-bin atlas views for spatial domains and marker genes.</h2>
+          <p>
+            This static release shows the main spatial figures and the code used to generate gene-level views.
+            A later interactive page can load sparse cell-bin coordinates and draw JS/control expression on demand.
+          </p>
+        </div>
+        <div class="preview-row">
+          <button class="figure-button wide" data-figure="assets/figures/f2.webp" data-title="Figure 2 | snRNA-seq and spatial atlas">
+            <img src="assets/figures/f2.webp" alt="Spatial atlas preview">
+          </button>
+          <button class="figure-button wide" data-figure="assets/figures/f4.webp" data-title="Figure 4 | Cerebellar lineage and spatial validation">
+            <img src="assets/figures/f4.webp" alt="Cerebellar spatial validation preview">
+          </button>
         </div>
       </section>
 
@@ -155,6 +193,37 @@
         </div>
       </section>
 
+      <section id="networks" class="section atlas-panel">
+        <div class="section-head">
+          <p class="eyebrow">Regulatory networks</p>
+          <h2>pySCENIC and hdWGCNA are separated into readable modules.</h2>
+          <p>
+            Regulon activity, TF-target networks, co-expression modules, module eigengenes and hub genes are organized
+            as independent workflows instead of a single mixed template.
+          </p>
+        </div>
+        <div class="method-strip">
+          <a href="code/analysis/08_pyscenic/pyscenic_downstream_public.R">pySCENIC downstream</a>
+          <a href="code/analysis/08_pyscenic/spatial_cellbin_export_for_pyscenic.R">spatial pySCENIC export</a>
+          <a href="code/analysis/09_hdwgcna/hdwgcna_public_workflow.R">hdWGCNA</a>
+        </div>
+      </section>
+
+      <section id="cellchat" class="section communication-panel">
+        <div class="section-head">
+          <p class="eyebrow">Cell-cell communication</p>
+          <h2>Single-nucleus and spatial CellChat comparisons remain independent.</h2>
+          <p>
+            Kidney CellChat follows the single-cell workflow, while spatial CellChat uses cell-bin coordinates,
+            nearest-neighbor scale, contact range and JS/control merged comparison.
+          </p>
+        </div>
+        <div class="method-strip">
+          <a href="code/analysis/07_cellchat/cellchat_public_workflows.R">Open CellChat workflow</a>
+          <a href="code/docs/PUBLIC_WORKFLOW_RUNBOOK.md">View run settings</a>
+        </div>
+      </section>
+
       <section id="code" class="section code-section">
         <div class="section-head">
           <p class="eyebrow">Code resource</p>
@@ -184,13 +253,14 @@
             </article>
             <article>
               <h3>Spatial transcriptomics</h3>
-              <p>Cell-bin label transfer, predicted spatial cell states, gene plots and cerebellar program scores.</p>
-              <a href="code/analysis/04_spatial_transcriptomics/stereo_label_transfer_spatial_plots.R">Open R workflow</a>
+              <p>Cell-bin object construction, manual annotation, label transfer, spatial DEG and gene plots.</p>
+              <a href="code/analysis/04_spatial_transcriptomics/cellbin_build_and_annotation.R">Build atlas</a>
+              <a href="code/analysis/04_spatial_transcriptomics/st_label_transfer_and_celltype_deg.R">Label transfer</a>
             </article>
             <article>
-              <h3>Bulk multi-omics</h3>
-              <p>Processed matrix PCA, volcano plots, GO enrichment and differential feature set summaries.</p>
-              <a href="code/analysis/05_bulk_multiomics/bulk_multiomics_summary_plots.R">Open R workflow</a>
+              <h3>Bulk RNA-seq</h3>
+              <p>featureCounts matrix assembly, DESeq2, genotype contrasts, GO enrichment and overlap sets.</p>
+              <a href="code/analysis/05_bulk_multiomics/bulk_deseq2_go_figures.R">Open R workflow</a>
             </article>
             <article>
               <h3>Lineage and RNA velocity</h3>
@@ -200,8 +270,10 @@
             </article>
             <article>
               <h3>Networks and signaling</h3>
-              <p>CellChat comparison, pySCENIC export and hdWGCNA setup for disease-sensitive cell states.</p>
-              <a href="code/analysis/07_networks_signaling/hdwgcna_pyscenic_cellchat_templates.R">Open R workflow</a>
+              <p>CellChat, pySCENIC and hdWGCNA are split into separate manuscript-facing workflows.</p>
+              <a href="code/analysis/07_cellchat/cellchat_public_workflows.R">CellChat</a>
+              <a href="code/analysis/08_pyscenic/pyscenic_downstream_public.R">pySCENIC</a>
+              <a href="code/analysis/09_hdwgcna/hdwgcna_public_workflow.R">hdWGCNA</a>
             </article>
           </div>
         </div>

@@ -1,120 +1,117 @@
-# Methods-to-code Map
+# Methods-to-Code Map
 
-This map turns the manuscript Methods into a concise public code structure.
+This map links the manuscript computational methods to the curated public code.
 
-## snRNA-seq processing
+## Raw processing and sample metadata
 
-Methods:
+- Sample metadata:
+  `metadata/snrna_sample_sheet_public_template.csv`
+- Raw processing notes:
+  `analysis/01_raw_processing/`
 
-- Cell Ranger v9/v10
-- GRCh38-compatible reference
-- intronic reads retained
-- filtered feature-barcode matrices used for atlas construction
-- kidney count matrices additionally corrected with SoupX before final atlas construction
+Public BAM files provide read-level provenance. The analysis workflows begin
+from matrix-level Cell Ranger outputs or processed controlled-access objects.
 
-Curated code:
+## snRNA-seq atlas construction
 
-- `analysis/01_raw_processing/cellranger_count_template.sh`
-- `analysis/02_snRNAseq_atlas/seurat_qc_integration_template.R`
-- `metadata/snrna_sample_sheet_public_template.csv`
-- `docs/PUBLIC_WORKFLOW_RUNBOOK.md`
+- Main script:
+  `analysis/02_snRNAseq_atlas/seurat_qc_integration_template.R`
 
-## QC, doublet detection, and integration
+Methods represented:
 
-Methods:
+- looping over Cell Ranger filtered matrices
+- kidney SoupX ambient RNA removal
+- doublet removal
+- Seurat QC, integration, PCA/UMAP and clustering
+- final object summary
 
-- Seurat v5
-- per-sample QC
-- DoubletFinder/scDblFinder branches
-- CCA integration
-- iterative removal of low-quality clusters
-- cerebellum integration dimensions 1-30 and main resolution 0.4
-- kidney integration dimensions 1-30 and iterative resolutions 0.5-0.8
+## Cell-type annotation, DEG and GO
 
-Curated code:
+- Main script:
+  `analysis/03_annotation_de_enrichment/annotation_markers_de_enrichment.R`
 
-- `analysis/02_snRNAseq_atlas/seurat_qc_integration_template.R`
-- `analysis/02_snRNAseq_atlas/final_object_summary.md`
+Methods represented:
 
-The detailed historical scripts remain private because they contain sample-specific and server-specific paths. The curated code now records the Methods-level parameters and final-object metadata needed to evaluate the analysis logic.
-
-## Cell-type annotation, markers, DE, and enrichment
-
-Methods:
-
-- COSG and Seurat marker identification
-- FindMarkers for JS-control contrasts
-- clusterProfiler/org.Hs.eg.db for GO biological process enrichment
-
-Curated code:
-
-- `analysis/03_annotation_de_enrichment/annotation_markers_de_enrichment.R`
-
-The annotation script now runs marker discovery, cell-type-specific JS-control DE, GO enrichment and composition summaries from a supplied Seurat object.
+- marker gene discovery
+- cell-type-specific JS/control contrasts
+- GO Biological Process enrichment
+- cell-type composition summaries
 
 ## Spatial transcriptomics
 
-Methods:
+- Spatial helper functions:
+  `analysis/04_spatial_transcriptomics/STimport_public.R`
+- Cell-bin object construction and annotation:
+  `analysis/04_spatial_transcriptomics/cellbin_build_and_annotation.R`
+- Label transfer and spatial cell-type DEG:
+  `analysis/04_spatial_transcriptomics/st_label_transfer_and_celltype_deg.R`
 
-- Stereo-seq FF V1.3
-- cell-bin gene-expression matrices
-- Seurat label transfer from snRNA-seq to spatial bins
-- marker and module-score spatial maps
+Methods represented:
 
-Curated code:
+- Stereo-seq cell-bin count matrix loading
+- ENSEMBL-to-symbol conversion
+- spatial coordinate embedding
+- SCT/PCA/UMAP/clustering
+- manual cerebellar spatial domain annotation
+- snRNA-seq-to-cell-bin label transfer
+- cell-type-specific spatial DEG and GO
 
-- `analysis/04_spatial_transcriptomics/stereo_label_transfer_spatial_plots.R`
+## Bulk RNA-seq
 
-The spatial script now performs Seurat label transfer, exports predicted cell-bin metadata, plots selected genes and plots cerebellar program scores.
+- Main script:
+  `analysis/05_bulk_multiomics/bulk_deseq2_go_figures.R`
 
-## Bulk multi-omics
+Methods represented:
 
-Methods:
+- featureCounts matrix assembly
+- DESeq2 JS/control contrasts
+- genotype-specific kidney contrasts
+- GO enrichment and DEG set export
 
-- bulk RNA-seq, DIA proteomics, untargeted metabolomics
-- PCA, differential feature analysis, GO/pathway enrichment
-- cross-omic interpretation
+## Lineage and velocity
 
-Curated code:
+- Monocle:
+  `analysis/06_lineage_velocity/monocle_lineage_template.R`
+- scVelo:
+  `analysis/06_lineage_velocity/scvelo_velocity_template.py`
 
-- `analysis/05_bulk_multiomics/bulk_multiomics_summary_plots.R`
+## CellChat
 
-The bulk script now accepts processed feature matrices and DE tables for PCA, volcano plotting, GO enrichment and cross-table set-size summaries.
+- Main script:
+  `analysis/07_cellchat/cellchat_public_workflows.R`
 
-## Trajectory and velocity
+Methods represented:
 
-Methods:
+- kidney single-nucleus CellChat
+- spatial cell-bin CellChat
+- merged JS/control signaling comparison
+- differential ligand-receptor mapping
 
-- Monocle 2/3 for GC, VZP, NPC, nephron, and UB/CD trajectories
-- scVelo for RNA velocity from loom and h5ad objects
+## pySCENIC
 
-Curated code:
+- Downstream regulon analysis:
+  `analysis/08_pyscenic/pyscenic_downstream_public.R`
+- Spatial cell-bin export:
+  `analysis/08_pyscenic/spatial_cellbin_export_for_pyscenic.R`
+- Loom creation:
+  `analysis/08_pyscenic/make_loom_from_matrix.py`
 
-- `analysis/06_lineage_velocity/monocle_lineage_template.R`
-- `analysis/06_lineage_velocity/scvelo_velocity_template.py`
+Methods represented:
 
-These scripts now accept command-line inputs for Seurat objects, h5ad files and loom files.
+- regulon AUC extraction from loom files
+- RSS analysis by cell type/group/genotype
+- TF-target GO enrichment
+- TF-target network visualization
 
-## Networks and signaling
+## hdWGCNA
 
-Methods:
+- Main script:
+  `analysis/09_hdwgcna/hdwgcna_public_workflow.R`
 
-- CellChat for ligand-receptor signaling
-- hdWGCNA for co-expression modules
-- pySCENIC for regulon inference
+Methods represented:
 
-Curated code:
-
-- `analysis/07_networks_signaling/hdwgcna_pyscenic_cellchat_templates.R`
-
-This script now supports `cellchat`, `pyscenic_export` and `hdwgcna` modes.
-
-## Figure visualization
-
-Methods:
-
-- ggplot2, patchwork, pheatmap, ComplexHeatmap, CellChat, hdWGCNA plotting outputs
-
-Curated code:
-
-- `analysis/08_visualization/publication_plot_helpers.R`
+- metacell construction
+- signed co-expression network inference
+- module eigengenes and kME
+- hub gene export
+- cerebellum GCs/VZP/PKCs and kidney module analysis

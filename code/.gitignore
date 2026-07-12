@@ -10,6 +10,6 @@
 *.bai
 *.fastq.gz
 *.fq.gz
-/data/
-/results/
-/figures/
+data/
+results/
+figures/

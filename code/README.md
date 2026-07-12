@@ -33,8 +33,9 @@ curated_code/
 │   ├── 04_spatial_transcriptomics/
 │   ├── 05_bulk_multiomics/
 │   ├── 06_lineage_velocity/
-│   ├── 07_networks_signaling/
-│   └── 08_visualization/
+│   ├── 07_cellchat/
+│   ├── 08_pyscenic/
+│   └── 09_hdwgcna/
 ├── metadata/
 │   └── snrna_sample_sheet_public_template.csv
 └── docs/
@@ -77,9 +78,13 @@ Then replace the relative paths in `metadata/snrna_sample_sheet_public_template.
 
 - snRNA-seq atlas construction: `analysis/02_snRNAseq_atlas/seurat_qc_integration_template.R`
 - annotation, marker, DE and GO analysis: `analysis/03_annotation_de_enrichment/annotation_markers_de_enrichment.R`
-- Stereo-seq/cell-bin label transfer and spatial plotting: `analysis/04_spatial_transcriptomics/stereo_label_transfer_spatial_plots.R`
-- bulk RNA/proteome/metabolome summaries: `analysis/05_bulk_multiomics/bulk_multiomics_summary_plots.R`
+- Stereo-seq/cell-bin construction, annotation, label transfer and spatial DEG:
+  `analysis/04_spatial_transcriptomics/`
+- bulk RNA-seq DESeq2 and GO summaries:
+  `analysis/05_bulk_multiomics/bulk_deseq2_go_figures.R`
 - Monocle2 trajectories and scVelo velocity: `analysis/06_lineage_velocity/`
-- CellChat, pySCENIC input export and hdWGCNA setup: `analysis/07_networks_signaling/hdwgcna_pyscenic_cellchat_templates.R`
+- CellChat workflows: `analysis/07_cellchat/cellchat_public_workflows.R`
+- pySCENIC downstream analysis and spatial loom export: `analysis/08_pyscenic/`
+- hdWGCNA co-expression modules: `analysis/09_hdwgcna/hdwgcna_public_workflow.R`
 
 This is the version I would show to reviewers, collaborators, or pharmaceutical internship interviewers.
