@@ -76,20 +76,23 @@ Key settings:
 
 Input:
 
-- featureCounts `.txt` files for cerebellum and kidney bulk RNA-seq
+- featureCounts `.txt` files for kidney, cerebellum, frontal lobe and occipital lobe bulk RNA-seq
+- `metadata/bulk_rnaseq_sample_sheet_template.csv` with final sample inclusion and JS/ctrl group labels
+- proteomics differential tables and metabolomics heatmap tables under `data/processed/`
 
 Run:
 
 ```bash
-Rscript analysis/05_bulk_multiomics/bulk_deseq2_go_figures.R
+Rscript analysis/05_bulk_multiomics/bulk_rnaseq_deseq2_go.R
+Rscript analysis/05_bulk_multiomics/proteomics_metabolomics_figures.R
 ```
 
 Key settings:
 
 - rows retained with `rowSums(counts) > 10`
 - DESeq2 `fitType = "mean"`
-- cerebellum DEG: `padj < 0.05` and `abs(log2FoldChange) > 0.5`
 - JS/control DEG threshold: adjusted P value < 0.05 and abs(log2FoldChange) > 0.5
+- protein threshold: `Significant == "yes"` and abs(log2FC) > 0.5
 
 ## 5. Trajectory and RNA velocity
 
@@ -113,7 +116,7 @@ Key settings:
 
 - cerebellum CellChat: VZP/IN/PKC/GC/UBC/Cycling subset, full CellChatDB,
   `type = "truncatedMean"`, `trim = 0.01`, `min.cells = 10`
-- kidney updated CellChat: NPC/Podocyte/PT/LOH/LOH_DTL/DCT/UB_CD/Stromal/Endo/Cycling,
+- kidney updated CellChat: NPC/Podocyte/PT/LOH/PEC/DCT/UB_CD/Stromal/Endo/Cycling,
   full CellChatDB, `trim = 0.01`, `min.cells = 10`
 - kidney ECM branch: optional older ECM-Receptor workflow, `trim = 0.1`
 - differential LR mapping: `thresh.pc = 0.1`, `thresh.fc = 0.05`, `thresh.p = 0.05`

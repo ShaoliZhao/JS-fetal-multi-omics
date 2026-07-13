@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="Fetal Joubert syndrome multi-omics atlas integrating snRNA-seq, spatial transcriptomics, bulk omics, trajectories, regulatory networks and signaling analysis.">
+    <meta name="description" content="Public code and figure portal for a fetal Joubert syndrome multi-omics atlas.">
     <title>Fetal Joubert Syndrome Multi-omics Atlas</title>
     <link rel="icon" href="favicon.svg" type="image/svg+xml">
     <link rel="stylesheet" href="assets/css/styles.css">
@@ -13,14 +13,13 @@
       <nav class="nav" aria-label="Primary navigation">
         <a class="brand" href="#top">
           <span class="brand-mark">JS</span>
-          <span>Fetal Joubert Atlas</span>
+          <span>Fetal Joubert Multi-omics</span>
         </a>
         <div class="nav-links">
           <a href="#overview">Overview</a>
-          <a href="#deg">DEG</a>
-          <a href="#expression">Expression</a>
-          <a href="#networks">Networks</a>
-          <a href="#cellchat">CellChat</a>
+          <a href="#spatial">Spatial</a>
+          <a href="#bulk">Bulk omics</a>
+          <a href="#figures">Figures</a>
           <a href="#code">Code</a>
         </div>
       </nav>
@@ -29,251 +28,213 @@
     <main id="top">
       <section class="hero">
         <div class="hero-copy">
-          <p class="eyebrow">Human fetal disease atlas · multi-omics portfolio</p>
-          <h1>Multi-omic fetal mapping reveals cilia-dependent developmental derailment in Joubert syndrome.</h1>
+          <p class="eyebrow">Human fetal disease atlas</p>
+          <h1>Fetal Joubert syndrome multi-omics atlas</h1>
           <p class="lead">
-            A controlled-input computational resource linking rare ciliopathy genetics to fetal cerebellar and renal
-            developmental failure through snRNA-seq, cell-bin spatial transcriptomics, bulk RNA-seq, proteomics,
-            metabolomics, trajectory inference, regulatory networks and cell-cell communication.
+            A public-facing code and figure portal for snRNA-seq, cell-bin spatial transcriptomics,
+            bulk RNA-seq, proteomics, metabolomics, lineage analysis, regulatory networks and
+            cell-cell communication in fetal Joubert syndrome tissues.
           </p>
           <div class="hero-actions">
-            <a class="button primary" href="#overview">Explore atlas</a>
-            <a class="button" href="#code">Browse analysis code</a>
+            <a class="button primary" href="spatial_atlas/index.html">Open spatial atlas</a>
+            <a class="button" href="#code">Browse code modules</a>
+            <a class="button quiet" href="code/docs/PUBLIC_WORKFLOW_RUNBOOK.md">Runbook</a>
           </div>
         </div>
         <figure class="hero-media">
-          <img src="assets/figures/f1.webp" alt="Overview of the fetal Joubert syndrome cohort and multi-omic study design">
+          <img src="assets/figures/f1.webp" alt="Cohort and multi-omic study design">
         </figure>
       </section>
 
       <section class="metrics" aria-label="Study scale">
-        <div><strong>20</strong><span>snRNA-seq sample entries in public sample sheet</span></div>
-        <div><strong>194,911</strong><span>cerebellar nuclei after QC</span></div>
-        <div><strong>66,906</strong><span>kidney nuclei after QC</span></div>
-        <div><strong>4</strong><span>JS genes: CEP290, CPLANE1, TMEM67, OFD1</span></div>
+        <div><strong>4</strong><span>JS-associated genes represented in the fetal cohort</span></div>
+        <div><strong>2</strong><span>major fetal organs profiled by snRNA-seq and omics</span></div>
+        <div><strong>4</strong><span>bulk RNA-seq tissues separated in the public workflow</span></div>
+        <div><strong>1</strong><span>cell-bin spatial atlas template for JS/control gene lookup</span></div>
       </section>
 
       <section id="overview" class="section">
         <div class="section-head">
-          <p class="eyebrow">Atlas logic</p>
-          <h2>From genotype to vulnerable cell states, spatial context and targetable pathways.</h2>
+          <p class="eyebrow">Repository structure</p>
+          <h2>Readable workflows, not a private server-path script dump.</h2>
           <p>
-            The analysis is organized as a reproducible computational story rather than a loose script dump:
-            controlled matrix inputs, QC, integration, annotation, disease contrasts, spatial mapping, lineage dynamics,
-            regulatory networks, signaling and figure-level synthesis.
+            The release is organized around controlled inputs and manuscript outputs. Sample metadata,
+            cell-type contrasts, thresholds, figure-level plotting and downstream analyses are kept in
+            short modules so reviewers and internship evaluators can understand the computational logic.
           </p>
         </div>
         <div class="track-grid">
           <article>
             <span>01</span>
-            <h3>Controlled inputs</h3>
-            <p>Supplementary sample information drives matrix loading and preserves de-identified sample metadata.</p>
+            <h3>Input setup</h3>
+            <p>Project paths, public sample sheets and documented data boundaries.</p>
           </article>
           <article>
             <span>02</span>
-            <h3>snRNA-seq atlases</h3>
-            <p>Seurat v5 CCA integration, doublet handling, SoupX for kidney and iterative cell-type annotation.</p>
+            <h3>Atlas construction</h3>
+            <p>Seurat snRNA-seq integration, kidney SoupX correction and doublet filtering.</p>
           </article>
           <article>
             <span>03</span>
-            <h3>Spatial validation</h3>
-            <p>Cell-bin label transfer and spatial gene/program plots link molecular states to tissue architecture.</p>
+            <h3>Spatial mapping</h3>
+            <p>Cell-bin Seurat construction, annotation, label transfer and spatial DEG.</p>
           </article>
           <article>
             <span>04</span>
-            <h3>Mechanism discovery</h3>
-            <p>DE, GO, Monocle, scVelo, CellChat, pySCENIC and hdWGCNA identify disease-relevant programs.</p>
+            <h3>Mechanisms</h3>
+            <p>DESeq2, GO, Monocle, scVelo, CellChat, pySCENIC and hdWGCNA workflows.</p>
           </article>
         </div>
       </section>
 
-      <section id="deg" class="section atlas-panel">
+      <section id="spatial" class="section spatial-section">
         <div class="section-head">
-          <p class="eyebrow">Differential genes</p>
-          <h2>Cell-type and tissue-level contrasts are kept close to the figures.</h2>
+          <p class="eyebrow">Interactive spatial atlas</p>
+          <h2>Search a gene and compare JS/control cell-bin expression side by side.</h2>
           <p>
-            The code keeps the original thresholds visible: cerebellum bulk DEG uses adjusted p value and log2FC,
-            kidney genotype contrasts use p value and log2FC, and spatial cell-bin DEG uses cell-type-specific
-            OFD1-control comparisons.
+            The atlas uses coordinates plus per-gene expression vectors. This keeps the public site light:
+            it draws expression in the browser instead of storing thousands of 20 MB pre-rendered images.
           </p>
         </div>
-        <div class="method-strip">
-          <a href="code/analysis/03_annotation_de_enrichment/annotation_markers_de_enrichment.R">snRNA-seq DEG</a>
-          <a href="code/analysis/04_spatial_transcriptomics/st_label_transfer_and_celltype_deg.R">spatial DEG</a>
-          <a href="code/analysis/05_bulk_multiomics/bulk_deseq2_go_figures.R">bulk DESeq2</a>
+        <div class="feature-split">
+          <figure class="feature-image">
+            <img src="assets/figures/f2.webp" alt="Spatial and single-nucleus atlas preview">
+          </figure>
+          <div class="feature-copy">
+            <h3>Designed for full-gene expansion</h3>
+            <p>
+              The demo page ships with example genes. The paired R exporter writes the same data layout
+              from the annotated Seurat cell-bin object, so the demo data can be replaced with real
+              JS/control coordinates and gene expression files.
+            </p>
+            <div class="method-strip tight">
+              <a href="spatial_atlas/index.html">Open atlas demo</a>
+              <a href="code/analysis/04_spatial_transcriptomics/export_spatial_point_atlas_data.R">Exporter script</a>
+              <a href="code/analysis/04_spatial_transcriptomics/cellbin_build_and_annotation.R">Cell-bin build</a>
+            </div>
+          </div>
         </div>
       </section>
 
-      <section id="expression" class="section expression-panel">
-        <div class="section-head compact">
-          <p class="eyebrow">Gene expression plots</p>
-          <h2>Cell-bin atlas views for spatial domains and marker genes.</h2>
+      <section id="bulk" class="section bulk-section">
+        <div class="section-head">
+          <p class="eyebrow">Bulk omics</p>
+          <h2>RNA, protein and metabolites are now separated cleanly.</h2>
           <p>
-            This static release shows the main spatial figures and the code used to generate gene-level views.
-            A later interactive page can load sparse cell-bin coordinates and draw JS/control expression on demand.
+            The RNA-seq workflow reads a sample sheet aligned to the supplementary tables and keeps kidney,
+            cerebellum, frontal lobe and occipital lobe contrasts separate. Proteomics and metabolomics
+            are handled in a second figure-focused script using the uploaded supplementary tables.
           </p>
         </div>
-        <div class="preview-row">
-          <button class="figure-button wide" data-figure="assets/figures/f2.webp" data-title="Figure 2 | snRNA-seq and spatial atlas">
-            <img src="assets/figures/f2.webp" alt="Spatial atlas preview">
-          </button>
-          <button class="figure-button wide" data-figure="assets/figures/f4.webp" data-title="Figure 4 | Cerebellar lineage and spatial validation">
-            <img src="assets/figures/f4.webp" alt="Cerebellar spatial validation preview">
-          </button>
+        <div class="code-modules compact-grid">
+          <article>
+            <h3>Bulk RNA-seq DESeq2 and GO</h3>
+            <p>FeatureCounts to DESeq2, diffbox-style outputs, DEG tables, GO summaries, heatmaps and Venn plots.</p>
+            <a href="code/analysis/05_bulk_multiomics/bulk_rnaseq_deseq2_go.R">Open RNA-seq workflow</a>
+          </article>
+          <article>
+            <h3>Proteomics and metabolomics</h3>
+            <p>Protein DEG/GO, RNA-protein overlaps, metabolite heatmaps and JS/control summary figures.</p>
+            <a href="code/analysis/05_bulk_multiomics/proteomics_metabolomics_figures.R">Open protein/metabolite workflow</a>
+          </article>
         </div>
       </section>
 
       <section id="figures" class="section figure-section">
         <div class="section-head compact">
-          <p class="eyebrow">Main figure atlas</p>
-          <h2>Eight manuscript figures, optimized for web viewing.</h2>
+          <p class="eyebrow">Main figures</p>
+          <h2>Manuscript figure atlas</h2>
           <p>
-            Supplementary figures are intentionally not displayed here. The public site focuses on the main scientific
-            arc and the computational workflows behind it.
+            The site focuses on the main scientific arc and code. Supplementary figures are not displayed
+            here, keeping the GitHub page readable and fast.
           </p>
         </div>
-
         <div class="figure-grid">
           <article class="figure-card">
-            <button class="figure-button" data-figure="assets/figures/f1.webp" data-title="Figure 1 | Cohort and multi-omic study design">
-              <img src="assets/figures/f1.webp" alt="Figure 1">
-            </button>
-            <h3>Figure 1</h3>
-            <p>Fetal cohort, affected ciliary genes, sampled tissues and multi-omic design.</p>
+            <button class="figure-button" data-figure="assets/figures/f1.webp" data-title="Figure 1 | Cohort and study design"><img src="assets/figures/f1.webp" alt="Figure 1"></button>
+            <h3>Figure 1</h3><p>Cohort, sampled tissues and multi-omic design.</p>
           </article>
           <article class="figure-card">
-            <button class="figure-button" data-figure="assets/figures/f2.webp" data-title="Figure 2 | Fetal multi-omic atlas">
-              <img src="assets/figures/f2.webp" alt="Figure 2">
-            </button>
-            <h3>Figure 2</h3>
-            <p>snRNA-seq, spatial mapping, cell-type changes and cross-omic overview.</p>
+            <button class="figure-button" data-figure="assets/figures/f2.webp" data-title="Figure 2 | snRNA-seq and spatial atlas"><img src="assets/figures/f2.webp" alt="Figure 2"></button>
+            <h3>Figure 2</h3><p>snRNA-seq, spatial mapping and cell-type overview.</p>
           </article>
           <article class="figure-card">
-            <button class="figure-button" data-figure="assets/figures/f3.webp" data-title="Figure 3 | Bulk-omic divergence">
-              <img src="assets/figures/f3.webp" alt="Figure 3">
-            </button>
-            <h3>Figure 3</h3>
-            <p>Bulk RNA, proteomic and metabolomic divergence between brain and kidney.</p>
+            <button class="figure-button" data-figure="assets/figures/f3.webp" data-title="Figure 3 | Bulk omics"><img src="assets/figures/f3.webp" alt="Figure 3"></button>
+            <h3>Figure 3</h3><p>Bulk RNA, protein and metabolite divergence.</p>
           </article>
           <article class="figure-card">
-            <button class="figure-button" data-figure="assets/figures/f4.webp" data-title="Figure 4 | Granule-cell progenitor depletion">
-              <img src="assets/figures/f4.webp" alt="Figure 4">
-            </button>
-            <h3>Figure 4</h3>
-            <p>Granule-cell progenitor depletion, wiring programs and spatial validation.</p>
+            <button class="figure-button" data-figure="assets/figures/f4.webp" data-title="Figure 4 | Cerebellar lineage"><img src="assets/figures/f4.webp" alt="Figure 4"></button>
+            <h3>Figure 4</h3><p>Granule-cell lineage and spatial validation.</p>
           </article>
           <article class="figure-card">
-            <button class="figure-button" data-figure="assets/figures/f5.webp" data-title="Figure 5 | VZP glial scaffold shift">
-              <img src="assets/figures/f5.webp" alt="Figure 5">
-            </button>
-            <h3>Figure 5</h3>
-            <p>VZP remodeling, glial scaffold programs, regulons and MDK signaling.</p>
+            <button class="figure-button" data-figure="assets/figures/f5.webp" data-title="Figure 5 | Glial and signaling programs"><img src="assets/figures/f5.webp" alt="Figure 5"></button>
+            <h3>Figure 5</h3><p>VZP, glial scaffold, regulons and signaling.</p>
           </article>
           <article class="figure-card">
-            <button class="figure-button" data-figure="assets/figures/f6.webp" data-title="Figure 6 | Kidney stromal remodeling">
-              <img src="assets/figures/f6.webp" alt="Figure 6">
-            </button>
-            <h3>Figure 6</h3>
-            <p>Kidney stromal remodeling, fibromatrix activation and signaling rewiring.</p>
+            <button class="figure-button" data-figure="assets/figures/f6.webp" data-title="Figure 6 | Kidney stromal remodeling"><img src="assets/figures/f6.webp" alt="Figure 6"></button>
+            <h3>Figure 6</h3><p>Kidney stromal remodeling and matrix activation.</p>
           </article>
           <article class="figure-card">
-            <button class="figure-button" data-figure="assets/figures/f7.webp" data-title="Figure 7 | Nephron output failure">
-              <img src="assets/figures/f7.webp" alt="Figure 7">
-            </button>
-            <h3>Figure 7</h3>
-            <p>NPC-derived nephron output failure and transcriptional network disruption.</p>
+            <button class="figure-button" data-figure="assets/figures/f7.webp" data-title="Figure 7 | Nephron output failure"><img src="assets/figures/f7.webp" alt="Figure 7"></button>
+            <h3>Figure 7</h3><p>NPC-derived nephron output failure.</p>
           </article>
           <article class="figure-card">
-            <button class="figure-button" data-figure="assets/figures/f8.webp" data-title="Figure 8 | UB/CD injury signaling">
-              <img src="assets/figures/f8.webp" alt="Figure 8">
-            </button>
-            <h3>Figure 8</h3>
-            <p>UB/CD trajectory, fibrosis/injury programs, WNT and SPP1-associated signaling.</p>
+            <button class="figure-button" data-figure="assets/figures/f8.webp" data-title="Figure 8 | UB/CD injury signaling"><img src="assets/figures/f8.webp" alt="Figure 8"></button>
+            <h3>Figure 8</h3><p>UB/CD trajectory, injury programs and WNT/SPP1 signaling.</p>
           </article>
-        </div>
-      </section>
-
-      <section id="networks" class="section atlas-panel">
-        <div class="section-head">
-          <p class="eyebrow">Regulatory networks</p>
-          <h2>pySCENIC and hdWGCNA are separated into readable modules.</h2>
-          <p>
-            Regulon activity, TF-target networks, co-expression modules, module eigengenes and hub genes are organized
-            as independent workflows instead of a single mixed template.
-          </p>
-        </div>
-        <div class="method-strip">
-          <a href="code/analysis/08_pyscenic/export_seurat_counts_for_pyscenic.R">pySCENIC export</a>
-          <a href="code/analysis/08_pyscenic/pyscenic_downstream_public.R">SCENIC/RSS</a>
-          <a href="code/analysis/09_hdwgcna/hdwgcna_public_workflow.R">hdWGCNA</a>
-          <a href="code/analysis/09_hdwgcna/hdwgcna_tf_network_public.R">hdWGCNA TF</a>
-        </div>
-      </section>
-
-      <section id="cellchat" class="section communication-panel">
-        <div class="section-head">
-          <p class="eyebrow">Cell-cell communication</p>
-          <h2>Single-nucleus and spatial CellChat comparisons remain independent.</h2>
-          <p>
-            Kidney CellChat follows the single-cell workflow, while spatial CellChat uses cell-bin coordinates,
-            nearest-neighbor scale, contact range and JS/control merged comparison.
-          </p>
-        </div>
-        <div class="method-strip">
-          <a href="code/analysis/07_cellchat/cellchat_public_workflows.R">Open CellChat workflow</a>
-          <a href="code/docs/PUBLIC_WORKFLOW_RUNBOOK.md">View run settings</a>
         </div>
       </section>
 
       <section id="code" class="section code-section">
         <div class="section-head">
-          <p class="eyebrow">Code resource</p>
-          <h2>Curated workflows that show the bioinformatics behind the manuscript.</h2>
+          <p class="eyebrow">Code modules</p>
+          <h2>Public workflows for reviewers and computational portfolio review.</h2>
           <p>
-            The repository exposes controlled-input workflows, not private fetal matrices. Each module has a clear
-            run path and writes reproducible tables or figures when supplied with local controlled-access data.
+            These files are meant to be readable and runnable with approved local inputs. They do not expose
+            private local paths or unnecessary per-sample Cell Ranger wrappers.
           </p>
         </div>
         <div class="code-layout">
           <aside class="code-index" aria-label="Code navigation">
+            <a href="code/README.md">Code README</a>
+            <a href="code/docs/METHODS_TO_CODE_MAP.md">Methods map</a>
             <a href="code/docs/PUBLIC_WORKFLOW_RUNBOOK.md">Runbook</a>
-            <a href="code/metadata/snrna_sample_sheet_public_template.csv">Sample sheet</a>
-            <a href="code/docs/DATA_AVAILABILITY_AND_REPRODUCIBILITY.md">Reproducibility notes</a>
-            <a href="code/docs/METHODS_TO_CODE_MAP.md">Methods-to-code map</a>
+            <a href="code/metadata/snrna_sample_sheet_public_template.csv">snRNA sample sheet</a>
+            <a href="code/metadata/bulk_rnaseq_sample_sheet_template.csv">bulk sample sheet</a>
           </aside>
           <div class="code-modules">
             <article>
-              <h3>snRNA-seq atlas construction</h3>
-              <p>Sample-sheet-driven matrix loading, cerebellar integration, kidney SoupX correction and doublet handling.</p>
-              <a href="code/analysis/02_snRNAseq_atlas/seurat_qc_integration_template.R">Open R workflow</a>
+              <h3>snRNA-seq atlas</h3>
+              <p>QC, Seurat integration, kidney ambient RNA correction and doublet-aware atlas construction.</p>
+              <a href="code/analysis/02_snRNAseq_atlas/seurat_qc_integration_template.R">Open workflow</a>
             </article>
             <article>
-              <h3>Annotation, DE and enrichment</h3>
-              <p>Marker discovery, cell-type-specific JS-control contrasts, GO enrichment and composition summaries.</p>
-              <a href="code/analysis/03_annotation_de_enrichment/annotation_markers_de_enrichment.R">Open R workflow</a>
+              <h3>Annotation, DEG and GO</h3>
+              <p>Marker annotation, JS/control cell-type contrasts, enrichment and composition summaries.</p>
+              <a href="code/analysis/03_annotation_de_enrichment/annotation_markers_de_enrichment.R">Open workflow</a>
             </article>
             <article>
               <h3>Spatial transcriptomics</h3>
-              <p>GEF-to-cellbin export, object construction, manual annotation, label transfer, spatial DEG and gene plots.</p>
-              <a href="code/analysis/04_spatial_transcriptomics/export_cellbin_gef_to_h5ad.py">GEF export</a>
-              <a href="code/analysis/04_spatial_transcriptomics/cellbin_build_and_annotation.R">Build atlas</a>
-              <a href="code/analysis/04_spatial_transcriptomics/st_label_transfer_and_celltype_deg.R">Label transfer</a>
+              <p>GEF export, cell-bin Seurat object construction, label transfer, DEG and atlas data export.</p>
+              <a href="code/analysis/04_spatial_transcriptomics/cellbin_build_and_annotation.R">Cell-bin build</a>
+              <a href="code/analysis/04_spatial_transcriptomics/export_spatial_point_atlas_data.R">Atlas export</a>
             </article>
             <article>
-              <h3>Bulk RNA-seq</h3>
-              <p>Bulk JS-control contrasts, FC/OL tissue separation, GO enrichment, Venn sets and heatmap summaries.</p>
-              <a href="code/analysis/05_bulk_multiomics/bulk_deseq2_go_figures.R">Open R workflow</a>
+              <h3>Bulk multi-omics</h3>
+              <p>DESeq2 RNA-seq plus separate proteomics and metabolomics figure workflows.</p>
+              <a href="code/analysis/05_bulk_multiomics/bulk_rnaseq_deseq2_go.R">RNA</a>
+              <a href="code/analysis/05_bulk_multiomics/proteomics_metabolomics_figures.R">Protein/metabolites</a>
             </article>
             <article>
-              <h3>Lineage and RNA velocity</h3>
-              <p>Monocle2 DDRTree, Monocle3 graph pseudotime and scVelo velocity from controlled inputs.</p>
+              <h3>Lineage and velocity</h3>
+              <p>Monocle2, Monocle3 and scVelo kept as independent workflows.</p>
               <a href="code/analysis/06_lineage_velocity/monocle2_ddrtree_lineage.R">Monocle2</a>
               <a href="code/analysis/06_lineage_velocity/monocle3_graph_lineage.R">Monocle3</a>
               <a href="code/analysis/06_lineage_velocity/scvelo_velocity_template.py">scVelo</a>
             </article>
             <article>
               <h3>Networks and signaling</h3>
-              <p>CellChat, pySCENIC and hdWGCNA are split into separate manuscript-facing workflows.</p>
+              <p>CellChat, pySCENIC and hdWGCNA modules for ligand-receptor, regulon and co-expression analysis.</p>
               <a href="code/analysis/07_cellchat/cellchat_public_workflows.R">CellChat</a>
               <a href="code/analysis/08_pyscenic/pyscenic_downstream_public.R">pySCENIC</a>
               <a href="code/analysis/09_hdwgcna/hdwgcna_public_workflow.R">hdWGCNA</a>
@@ -282,27 +243,27 @@
         </div>
       </section>
 
-      <section id="reproduce" class="section boundary">
+      <section class="section boundary">
         <div>
           <p class="eyebrow">Data boundary</p>
-          <h2>Transparent about what can and cannot be rerun from public files.</h2>
+          <h2>Transparent reproducibility statement</h2>
         </div>
         <p>
-          Public BAM files support read-level provenance, but the final atlas workflows require matrix-level outputs,
-          SoupX decisions, singlet calls, cluster-review exclusions and final annotation fields. The code is therefore
-          released as a controlled-input workflow: public-safe, reviewer-readable and runnable when the approved
-          processed inputs are available locally.
+          Public BAM files support read-level provenance. The complete atlas workflows require processed
+          matrix-level inputs, SoupX decisions, singlet calls, cluster-review exclusions and final annotation
+          fields. The repository therefore releases controlled-input workflows that are public-safe and
+          runnable when approved processed data are available locally.
         </p>
       </section>
     </main>
 
     <footer class="footer">
-      <p>Fetal Joubert Syndrome Multi-omics Atlas · code and website prepared for GitHub Pages.</p>
+      <p>Fetal Joubert Syndrome Multi-omics Atlas · GitHub Pages code and figure portal.</p>
     </footer>
 
     <dialog class="figure-modal" id="figureModal">
       <form method="dialog">
-        <button class="modal-close" aria-label="Close figure">×</button>
+        <button class="modal-close" aria-label="Close figure">x</button>
       </form>
       <h3 id="modalTitle"></h3>
       <img id="modalImage" alt="">

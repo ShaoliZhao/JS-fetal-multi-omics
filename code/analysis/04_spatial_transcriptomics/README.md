@@ -9,5 +9,7 @@ This folder contains the public cell-bin Stereo-seq workflow.
   SCT/PCA/UMAP/clustering, manual cell-type annotation and PKC comparison.
 - `st_label_transfer_and_celltype_deg.R`: snRNA-seq reference label transfer
   and cell-type-specific OFD1 vs control spatial DEG/GO.
+- `export_spatial_point_atlas_data.R`: exports cell-bin coordinates and
+  per-gene expression vectors for the browser-based spatial atlas.
 
 The spatial CellChat workflow is separated into `analysis/07_cellchat/`.

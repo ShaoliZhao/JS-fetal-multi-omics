@@ -21,7 +21,7 @@ options(future.globals.maxSize = 64 * 1024^3)
 analysis_name <- "kidney_nephron"
 object_file <- file.path(paths$data_processed, "seurat", "kidney_final.rds")
 
-celltypes_use <- c("NPC", "Podocyte", "PT", "LOH", "LOH_DTL", "DCT", "UB_CD", "Stromal", "Endo", "Cycling")
+celltypes_use <- c("NPC", "Podocyte", "PT", "LOH", "PEC", "DCT", "UB_CD", "Stromal", "Endo", "Cycling")
 network_celltypes <- celltypes_use
 celltype_col <- "celltype"
 sample_col <- "orig.ident"

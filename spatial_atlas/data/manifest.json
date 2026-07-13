@@ -1,0 +1,9 @@
+{
+  "demo": true,
+  "description": "Demo gene list for the browser atlas. Replace with exported Seurat cell-bin data.",
+  "samples": [
+    { "id": "ctrl", "label": "Control" },
+    { "id": "JS", "label": "JS / OFD1" }
+  ],
+  "genes": ["ATOH1", "PCP4", "WNT7B", "SOX2", "MKI67", "FOXJ1"]
+}

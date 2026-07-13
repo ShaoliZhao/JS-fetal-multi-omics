@@ -63,7 +63,7 @@ NPC        2,842
 Podocyte   7,059
 PT         2,885
 LOH        5,364
-LOH_DTL    2,983
+PEC    2,983
 DCT        3,783
 UB_CD     10,177
 Stromal   21,009

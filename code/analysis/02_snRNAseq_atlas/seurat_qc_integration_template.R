@@ -244,7 +244,7 @@ annotate_kidney_public_celltypes <- function(kidney_obj) {
   fine_map <- c(
     "0" = "Str_Cor_Out", "1" = "LOH", "2" = "UB", "3" = "Endo_Cap",
     "4" = "Str_Cor_Inn", "5" = "Podo_early", "6" = "DCT", "7" = "Str_var",
-    "8" = "CD_PC", "9" = "Str_Med", "10" = "LOH_DTL", "11" = "PT",
+    "8" = "CD_PC", "9" = "Str_Med", "10" = "PEC", "11" = "PT",
     "12" = "NPC", "13" = "Cycling", "14" = "Podo_mature", "15" = "UB_Tip",
     "16" = "Fibro", "17" = "MAC", "18" = "Endo_Art", "19" = "SMC_JGC",
     "20" = "Endo_Lymph", "21" = "Schwann", "22" = "CD_IC"
@@ -255,7 +255,7 @@ annotate_kidney_public_celltypes <- function(kidney_obj) {
   kidney_obj$celltype[kidney_obj$celltype %in% c("0", "4", "7", "9", "16")] <- "Stromal"
   kidney_obj$celltype[kidney_obj$celltype %in% c("5", "14")] <- "Podocyte"
   kidney_obj$celltype[kidney_obj$celltype == "1"] <- "LOH"
-  kidney_obj$celltype[kidney_obj$celltype == "10"] <- "LOH_DTL"
+  kidney_obj$celltype[kidney_obj$celltype == "10"] <- "PEC"
   kidney_obj$celltype[kidney_obj$celltype == "6"] <- "DCT"
   kidney_obj$celltype[kidney_obj$celltype == "11"] <- "PT"
   kidney_obj$celltype[kidney_obj$celltype == "12"] <- "NPC"
@@ -268,7 +268,7 @@ annotate_kidney_public_celltypes <- function(kidney_obj) {
 
   kidney_obj$celltype <- factor(
     kidney_obj$celltype,
-    levels = c("NPC", "Podocyte", "PT", "LOH", "LOH_DTL", "DCT", "UB_CD",
+    levels = c("NPC", "Podocyte", "PT", "LOH", "PEC", "DCT", "UB_CD",
                "Stromal", "SMC_JGC", "Endo", "MAC", "Schwann", "Cycling")
   )
   kidney_obj

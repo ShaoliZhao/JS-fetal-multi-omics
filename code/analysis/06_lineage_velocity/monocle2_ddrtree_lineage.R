@@ -20,7 +20,7 @@ lineage_name <- "kidney_nephron"
 celltype_col <- "celltype"
 group_col <- "group"
 sample_col <- "orig.ident"
-lineage_celltypes <- c("NPC", "Podocyte", "PT", "LOH", "LOH_DTL", "DCT")
+lineage_celltypes <- c("NPC", "Podocyte", "PT", "LOH", "PEC", "DCT")
 max_cells_per_sample <- 500
 ordering_gene_number <- 500
 root_state <- 3

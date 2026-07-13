@@ -23,7 +23,7 @@ datasets <- list(
   ),
   kidney = list(
     object = file.path(paths$data_processed, "seurat", "kidney_final.rds"),
-    celltypes = c("NPC", "Podocyte", "PT", "LOH", "LOH_DTL", "DCT", "UB_CD", "Stromal", "Endo", "Cycling"),
+    celltypes = c("NPC", "Podocyte", "PT", "LOH", "PEC", "DCT", "UB_CD", "Stromal", "Endo", "Cycling"),
     group_col = "group",
     celltype_col = "celltype",
     trim = 0.01

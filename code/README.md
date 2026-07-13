@@ -81,7 +81,9 @@ Then replace the relative paths in `metadata/snrna_sample_sheet_public_template.
 - Stereo-seq/cell-bin construction, annotation, label transfer and spatial DEG:
   `analysis/04_spatial_transcriptomics/`
 - bulk RNA-seq DESeq2 and GO summaries:
-  `analysis/05_bulk_multiomics/bulk_deseq2_go_figures.R`
+  `analysis/05_bulk_multiomics/bulk_rnaseq_deseq2_go.R`
+- proteomics, metabolomics and RNA-protein overlap figures:
+  `analysis/05_bulk_multiomics/proteomics_metabolomics_figures.R`
 - Monocle2 trajectories and scVelo velocity: `analysis/06_lineage_velocity/`
 - CellChat workflows: `analysis/07_cellchat/cellchat_public_workflows.R`
 - pySCENIC/SCENIC export, command template and RSS downstream analysis:

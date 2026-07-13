@@ -5,6 +5,7 @@ This repository hosts a public-facing project website and controlled-input analy
 The website focuses on:
 
 - main manuscript figures only;
+- a browser-based spatial atlas demo for cell-bin gene lookup;
 - the computational workflow behind the atlas;
 - public-safe code organization;
 - transparent reproducibility boundaries.
@@ -13,14 +14,20 @@ The website focuses on:
 
 Open `index.html` locally, or enable GitHub Pages from the repository root.
 
+The interactive spatial atlas entry point is:
+
+```text
+spatial_atlas/index.html
+```
+
 ## Code
 
 The `code/` folder contains curated workflows:
 
 - snRNA-seq atlas construction from sample-sheet-driven matrix inputs;
 - annotation, marker, cell-type DE and GO enrichment;
-- Stereo-seq/cell-bin label transfer and spatial plotting;
-- bulk multi-omics summaries;
+- Stereo-seq/cell-bin object construction, label transfer, spatial DEG and atlas data export;
+- bulk RNA-seq DESeq2/GO workflows separated from proteomics and metabolomics figure code;
 - Monocle2 and scVelo lineage dynamics;
 - CellChat, pySCENIC export and hdWGCNA setup.
 

@@ -58,8 +58,10 @@ Methods represented:
 
 ## Bulk RNA-seq
 
-- Main script:
-  `analysis/05_bulk_multiomics/bulk_deseq2_go_figures.R`
+- Bulk RNA-seq script:
+  `analysis/05_bulk_multiomics/bulk_rnaseq_deseq2_go.R`
+- Proteomics/metabolomics script:
+  `analysis/05_bulk_multiomics/proteomics_metabolomics_figures.R`
 
 Methods represented:
 

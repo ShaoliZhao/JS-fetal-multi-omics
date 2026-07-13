@@ -1,96 +1,127 @@
 #!/usr/bin/env python3
-"""scVelo RNA velocity workflow for public-safe re-analysis.
+"""scVelo RNA velocity workflow following the basic and dynamical tutorials."""
 
-Example:
-python analysis/06_lineage_velocity/scvelo_velocity_template.py \
-  --h5ad results/kidney_velocity_input.h5ad \
-  --loom data/controlled/velocity/sample1.loom data/controlled/velocity/sample2.loom \
-  --celltype-col celltype \
-  --basis umap \
-  --output-prefix results/kidney_velocity
-"""
-
-from __future__ import annotations
-
-import argparse
 from pathlib import Path
 
-import anndata
+import matplotlib.pyplot as plt
 import scanpy as sc
 import scvelo as scv
 
+project_root = Path(__file__).resolve().parents[2]
 
-def parse_args() -> argparse.Namespace:
-    parser = argparse.ArgumentParser(description="Run scVelo from an h5ad object and one or more loom files.")
-    parser.add_argument("--h5ad", required=True, help="Annotated h5ad converted from the final Seurat object.")
-    parser.add_argument("--loom", nargs="+", required=True, help="Velocyto loom files generated from Cell Ranger BAMs.")
-    parser.add_argument("--celltype-col", default="celltype", help="obs column used for coloring velocity plots.")
-    parser.add_argument("--group-col", default="group", help="obs column used for group summaries.")
-    parser.add_argument("--basis", default="umap", help="Embedding basis, usually umap.")
-    parser.add_argument("--mode", default="stochastic", choices=["stochastic", "dynamical", "deterministic"])
-    parser.add_argument("--n-top-genes", type=int, default=3000)
-    parser.add_argument("--n-pcs", type=int, default=30)
-    parser.add_argument("--n-neighbors", type=int, default=30)
-    parser.add_argument("--output-prefix", default="results/velocity_output")
-    return parser.parse_args()
+adata_file = project_root / "results" / "velocity" / "kidney_velocity_input.h5ad"
+loom_files = [
+    project_root / "data" / "external_controlled" / "velocity" / "sample1.loom",
+    project_root / "data" / "external_controlled" / "velocity" / "sample2.loom",
+]
 
+analysis_name = "kidney_velocity"
+celltype_col = "celltype"
+group_col = "group"
+basis = "umap"
+velocity_mode = "stochastic"
+run_dynamical_model = False
 
-def require_file(path: str) -> Path:
-    resolved = Path(path).expanduser()
-    if not resolved.exists():
-        raise FileNotFoundError(f"Input file not found: {resolved}")
-    return resolved
+min_shared_counts = 20
+n_top_genes = 3000
+n_pcs = 30
+n_neighbors = 30
 
+out_dir = project_root / "results" / "06_lineage_velocity" / "scvelo" / analysis_name
+fig_dir = project_root / "figures" / "06_lineage_velocity" / "scvelo" / analysis_name
+out_dir.mkdir(parents=True, exist_ok=True)
+fig_dir.mkdir(parents=True, exist_ok=True)
 
-def read_and_merge_velocity(h5ad_path: Path, loom_paths: list[Path]) -> anndata.AnnData:
-    adata = sc.read_h5ad(h5ad_path)
-    loom_objects = [scv.read(str(path), cache=True) for path in loom_paths]
-    if len(loom_objects) == 1:
-        ldata = loom_objects[0]
+scv.settings.verbosity = 3
+scv.settings.set_figure_params("scvelo")
+scv.settings.figdir = str(fig_dir)
+
+adata = sc.read_h5ad(adata_file)
+
+loom_files = [x for x in loom_files if x.exists()]
+if len(loom_files) > 0:
+    loom_list = [scv.read(str(x), cache=True) for x in loom_files]
+    if len(loom_list) == 1:
+        ldata = loom_list[0]
     else:
-        ldata = loom_objects[0].concatenate(loom_objects[1:], join="outer", batch_key="velocity_sample")
-    return scv.utils.merge(adata, ldata)
+        ldata = loom_list[0].concatenate(loom_list[1:], join="outer", batch_key="velocity_sample")
+    adata = scv.utils.merge(adata, ldata)
 
+scv.pp.filter_and_normalize(
+    adata,
+    min_shared_counts=min_shared_counts,
+    n_top_genes=n_top_genes,
+)
+scv.pp.moments(
+    adata,
+    n_pcs=n_pcs,
+    n_neighbors=n_neighbors,
+)
 
-def main() -> None:
-    args = parse_args()
-    h5ad_path = require_file(args.h5ad)
-    loom_paths = [require_file(path) for path in args.loom]
-    output_prefix = Path(args.output_prefix)
-    output_prefix.parent.mkdir(parents=True, exist_ok=True)
+if run_dynamical_model:
+    scv.tl.recover_dynamics(adata)
+    scv.tl.velocity(adata, mode="dynamical")
+else:
+    scv.tl.velocity(adata, mode=velocity_mode)
 
-    adata = read_and_merge_velocity(h5ad_path, loom_paths)
-    scv.pp.filter_and_normalize(adata, min_shared_counts=20, n_top_genes=args.n_top_genes)
-    scv.pp.moments(adata, n_pcs=args.n_pcs, n_neighbors=args.n_neighbors)
+scv.tl.velocity_graph(adata)
+scv.tl.velocity_confidence(adata)
 
-    if args.mode == "dynamical":
-        scv.tl.recover_dynamics(adata)
-    scv.tl.velocity(adata, mode=args.mode)
-    scv.tl.velocity_graph(adata)
+color = celltype_col if celltype_col in adata.obs.columns else None
+scv.pl.velocity_embedding_stream(
+    adata,
+    basis=basis,
+    color=color,
+    save=f"_{analysis_name}_stream.png",
+    show=False,
+)
+scv.pl.velocity_embedding(
+    adata,
+    basis=basis,
+    color=color,
+    arrow_length=3,
+    arrow_size=2,
+    dpi=150,
+    save=f"_{analysis_name}_arrows.png",
+    show=False,
+)
+scv.pl.velocity(
+    adata,
+    var_names=adata.var_names[:12],
+    color=color,
+    save=f"_{analysis_name}_selected_genes.png",
+    show=False,
+)
 
-    color = args.celltype_col if args.celltype_col in adata.obs.columns else None
-    scv.pl.velocity_embedding_stream(
+if run_dynamical_model:
+    scv.tl.latent_time(adata)
+    scv.pl.scatter(
         adata,
-        basis=args.basis,
-        color=color,
-        save=f"_{output_prefix.name}_stream.png",
+        color="latent_time",
+        color_map="gnuplot",
+        save=f"_{analysis_name}_latent_time.png",
         show=False,
     )
-    scv.pl.velocity_embedding(
+
+    top_genes = adata.var["fit_likelihood"].sort_values(ascending=False).index[:300]
+    scv.pl.heatmap(
         adata,
-        basis=args.basis,
-        color=color,
-        arrow_length=3,
-        arrow_size=2,
-        dpi=150,
-        save=f"_{output_prefix.name}_arrows.png",
+        var_names=top_genes,
+        sortby="latent_time",
+        col_color=celltype_col if celltype_col in adata.obs.columns else None,
+        n_convolve=100,
+        save=f"_{analysis_name}_latent_time_heatmap.png",
         show=False,
     )
 
-    adata.write_h5ad(f"{output_prefix}.h5ad")
-    if args.group_col in adata.obs.columns:
-        adata.obs[[args.group_col, args.celltype_col]].to_csv(f"{output_prefix}_cell_metadata.csv")
+    if celltype_col in adata.obs.columns:
+        scv.tl.rank_dynamical_genes(adata, groupby=celltype_col)
+        dynamic_genes = scv.get_df(adata, "rank_dynamical_genes/names")
+        dynamic_genes.to_csv(out_dir / "rank_dynamical_genes_by_celltype.csv")
 
+obs_cols = [x for x in [celltype_col, group_col, "velocity_length", "velocity_confidence"] if x in adata.obs.columns]
+if len(obs_cols) > 0:
+    adata.obs[obs_cols].to_csv(out_dir / "cell_velocity_metadata.csv")
 
-if __name__ == "__main__":
-    main()
+adata.write_h5ad(out_dir / f"{analysis_name}_scvelo.h5ad", compression="gzip")
+plt.close("all")

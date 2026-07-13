@@ -183,7 +183,7 @@ if (file.exists(kidney_seurat) && file.exists(kidney_loom) && file.exists(kidney
     kidney_loom,
     kidney_adj,
     prefix = "kidney",
-    subset_celltypes = c("NPC", "Podocyte", "PT", "LOH", "LOH_DTL", "DCT",
+    subset_celltypes = c("NPC", "Podocyte", "PT", "LOH", "PEC", "DCT",
                          "UB_CD", "Stromal", "Endo", "CD", "Prolif", "TAL",
                          "PODO", "IC", "M"),
     rss_settings = list(

@@ -19,7 +19,7 @@ object_file <- file.path(paths$data_processed, "seurat", "kidney_final.rds")
 lineage_name <- "kidney_nephron_monocle3"
 celltype_col <- "celltype"
 group_col <- "group"
-lineage_celltypes <- c("NPC", "Podocyte", "PT", "LOH", "LOH_DTL", "DCT", "UB_CD", "Cycling")
+lineage_celltypes <- c("NPC", "Podocyte", "PT", "LOH", "PEC", "DCT", "UB_CD", "Cycling")
 root_cluster <- "5"
 
 obj <- readRDS(object_file)
